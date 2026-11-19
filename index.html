@@ -431,16 +431,12 @@
       border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
     }
 
     .spinner-sm {
       width: 14px;
       height: 14px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      flex-shrink: 0;
     }
 
     @keyframes spin {
@@ -737,7 +733,7 @@
             <h2 class="section-title" data-i18n="lab_title">AutoRep F&amp;E-Synthesizer</h2>
           </div>
           <p class="section-desc" data-i18n="lab_desc">
-            Geben Sie ein beliebiges Trainingsgerät ein. Unser System erstellt zuerst das Datenblatt und berechnet anschließend eine animierte CAD-Zeichnung.
+            Geben Sie ein beliebiges Trainingsgerät ein. Unser System berechnet sofort das Datenblatt und zeichnet anschließend eine animierte CAD-Skizze.
           </p>
         </div>
 
@@ -759,7 +755,7 @@
               </button>
             </form>
             <p class="lab-hint" data-i18n="lab_hint">
-              Jeder Entwurf samt CAD-Animation wird live gespeichert und ist für den gesamten Kurs sichtbar.
+              Entwürfe werden direkt in Ihrem Browser-Archiv gespeichert und sind jederzeit auf Deutsch und Englisch abrufbar.
             </p>
             <div id="synthErrorBox" class="error-box hidden"></div>
           </div>
@@ -779,11 +775,11 @@
       <div class="container">
         <div class="section-head">
           <div>
-            <p class="eyebrow" data-i18n="archive_eyebrow">Gemeinsames Verzeichnis</p>
+            <p class="eyebrow" data-i18n="archive_eyebrow">Lokales Verzeichnis</p>
             <h2 class="section-title" data-i18n="archive_title">Entwicklungs-Archiv</h2>
           </div>
-          <button type="button" id="refreshArchiveBtn" class="btn btn-secondary" data-i18n="archive_refresh">
-            Aktualisieren
+          <button type="button" id="clearArchiveBtn" class="btn btn-secondary hidden" data-i18n="archive_clear">
+            Archiv leeren
           </button>
         </div>
 
@@ -810,6 +806,8 @@
   </footer>
 
   <script>
+    const STORAGE_KEY = 'autorep_prototypes_v1';
+
     const I18N = {
       de: {
         nav_lineup: 'Geräte',
@@ -825,24 +823,24 @@
         lineup_desc: 'Gefertigt aus eloxiertem Aluminium und Sichtcarbon für den unbeaufsichtigten 24-Stunden-Dauerbetrieb.',
         lab_eyebrow: 'Abteilung Produktentwicklung',
         lab_title: 'AutoRep F&E-Synthesizer',
-        lab_desc: 'Geben Sie ein beliebiges Trainingsgerät ein. Unser System erstellt zuerst das Datenblatt und berechnet anschließend eine animierte CAD-Zeichnung.',
+        lab_desc: 'Geben Sie ein beliebiges Trainingsgerät ein. Unser System berechnet sofort das Datenblatt und zeichnet anschließend eine animierte CAD-Skizze.',
         lab_label: 'Basis-Gegenstand',
         lab_placeholder: 'z. B. Kettlebell, Rudergerät, Springseil ...',
         lab_submit: 'Prototyp generieren',
         lab_wait: 'Bitte {s}s warten',
-        lab_hint: 'Jeder Entwurf samt CAD-Animation wird live gespeichert und ist für den gesamten Kurs sichtbar.',
+        lab_hint: 'Entwürfe werden direkt in Ihrem Browser-Archiv gespeichert und sind jederzeit auf Deutsch und Englisch abrufbar.',
         lab_step_design: 'Technisches Datenblatt wird berechnet ...',
         cad_generating: 'CAD-Animation wird gezeichnet ...',
-        generic_err: 'Prototyp konnte nicht generiert werden. Bitte prüfen Sie Terminal & API-Keys.',
+        generic_err: 'Prototyp konnte nicht generiert werden. Bitte prüfen Sie Ihren GEMINI_API_KEY.',
         datasheet_empty: 'Ihr generiertes Datenblatt erscheint hier.',
         protocol_heading: 'Autonomes Trainingsprotokoll',
         specs_heading: 'Spezifikationen',
         safety_prefix: 'Sicherheitshinweis: ',
         inspect_cta: 'Datenblatt öffnen →',
-        archive_eyebrow: 'Gemeinsames Verzeichnis',
+        archive_eyebrow: 'Lokales Verzeichnis',
         archive_title: 'Entwicklungs-Archiv',
-        archive_refresh: 'Aktualisieren',
-        archive_empty: 'Noch keine Prototypen im Archiv. Entwickeln Sie oben den ersten Entwurf.',
+        archive_clear: 'Archiv leeren',
+        archive_empty: 'Noch keine Prototypen vorhanden. Entwickeln Sie oben den ersten Entwurf.',
         modal_label: 'Technisches Datenblatt',
         modal_close: 'Schließen ✕',
         footer_note: 'Menschlicher Zutritt zur Trainingsfläche während des Betriebs untersagt.'
@@ -861,24 +859,24 @@
         lineup_desc: 'Machined from anodized aluminum and matte carbon fiber for unattended 24-hour operation.',
         lab_eyebrow: 'Product Engineering Division',
         lab_title: 'AutoRep R&D Synthesizer',
-        lab_desc: 'Enter any piece of gym gear. Our system generates the technical datasheet first, then renders a custom animated CAD schematic.',
+        lab_desc: 'Enter any piece of gym gear. Our system generates the technical datasheet instantly, then renders an animated CAD schematic.',
         lab_label: 'Base Equipment',
         lab_placeholder: 'e.g. Kettlebell, Rowing Machine, Jump Rope...',
         lab_submit: 'Generate Prototype',
         lab_wait: 'Wait {s}s',
-        lab_hint: 'Every datasheet and CAD animation is saved live and visible to everyone in the class.',
+        lab_hint: 'Prototypes are stored directly in your browser archive and can be toggled between German and English anytime.',
         lab_step_design: 'Generating technical datasheet...',
         cad_generating: 'Rendering CAD animation...',
-        generic_err: 'Could not generate prototype. Please check your terminal & API keys.',
+        generic_err: 'Could not generate prototype. Please check your GEMINI_API_KEY.',
         datasheet_empty: 'Your generated datasheet will appear here.',
         protocol_heading: 'Autonomous Workout Protocol',
         specs_heading: 'Specifications',
         safety_prefix: 'Safety notice: ',
         inspect_cta: 'Open datasheet →',
-        archive_eyebrow: 'Shared Registry',
+        archive_eyebrow: 'Local Registry',
         archive_title: 'R&D Archive',
-        archive_refresh: 'Refresh',
-        archive_empty: 'No prototypes in the archive yet. Create the first machine above.',
+        archive_clear: 'Clear Archive',
+        archive_empty: 'No prototypes yet. Create your first machine above.',
         modal_label: 'Technical Datasheet',
         modal_close: 'Close ✕',
         footer_note: 'Human entry onto the gym floor during active cycles is strictly prohibited.'
@@ -936,9 +934,25 @@
       }
     ];
 
+    function loadStoredArchive() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveStoredArchive(items) {
+      try {
+        const clean = items.slice(0, 18).map(({ _renderingCad, ...rest }) => rest);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
+      } catch (_) {}
+    }
+
     let currentLang = localStorage.getItem('autorep_lang') === 'en' ? 'en' : 'de';
-    let archiveItems = [];
-    let currentFeatured = null;
+    let archiveItems = loadStoredArchive();
+    let currentFeatured = archiveItems[0] || null;
     let currentModalProto = null;
     let cooldownRemaining = 0;
     let cooldownTimer = null;
@@ -950,6 +964,7 @@
     const synthLoadingOverlay = document.getElementById('synthLoadingOverlay');
     const featuredDatasheet = document.getElementById('featuredDatasheet');
     const archiveContainer = document.getElementById('archiveContainer');
+    const clearArchiveBtn = document.getElementById('clearArchiveBtn');
     const inspectModal = document.getElementById('inspectModal');
     const modalBodyContent = document.getElementById('modalBodyContent');
 
@@ -965,21 +980,17 @@
     }
 
     function localizePrototype(rawProto) {
-      const i18nBlock = rawProto.specs?.i18n?.[currentLang] || rawProto.specs?.i18n?.de || {};
-      const fallbackSpecs = Array.isArray(rawProto.specs)
-        ? rawProto.specs
-        : (rawProto.specs?.list || []);
-
+      const block = rawProto.i18n?.[currentLang] || rawProto.i18n?.de || {};
       return {
         model_code: rawProto.model_code || 'ARP-04',
-        product_name: i18nBlock.product_name || rawProto.product_name || 'AutoRep Unit',
-        base_item: i18nBlock.base_item || rawProto.base_item || '',
-        msrp: i18nBlock.msrp || rawProto.msrp || '3.490 €',
-        tagline: i18nBlock.tagline || rawProto.tagline || '',
-        autonomous_routine: i18nBlock.autonomous_routine || rawProto.autonomous_routine || '',
-        specs: Array.isArray(i18nBlock.specs) ? i18nBlock.specs : fallbackSpecs,
-        osha_warning: i18nBlock.osha_warning || rawProto.osha_warning || '',
-        cad_svg: rawProto.specs?.cad_svg || null,
+        product_name: block.product_name || 'AutoRep Unit',
+        base_item: block.base_item || '',
+        msrp: block.msrp || '3.490 €',
+        tagline: block.tagline || '',
+        autonomous_routine: block.autonomous_routine || '',
+        specs: Array.isArray(block.specs) ? block.specs : [],
+        osha_warning: block.osha_warning || '',
+        cad_svg: rawProto.cad_svg || null,
         rendering_cad: Boolean(rawProto._renderingCad)
       };
     }
@@ -996,7 +1007,7 @@
         return `
           <div class="media-frame cad-frame">
             <div class="media-fallback">
-              <span class="spinner-sm"></span>
+              <span class="spinner spinner-sm"></span>
               <span>${escapeHtml(t('cad_generating'))}</span>
             </div>
           </div>
@@ -1071,6 +1082,8 @@
     }
 
     function renderArchiveGrid() {
+      clearArchiveBtn.classList.toggle('hidden', archiveItems.length === 0);
+
       if (!archiveItems.length) {
         archiveContainer.innerHTML = `<div class="archive-empty">${escapeHtml(t('archive_empty'))}</div>`;
         return;
@@ -1159,30 +1172,12 @@
       }
     }
 
-    async function loadArchive() {
-      try {
-        const res = await fetch('/api/invent');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (Array.isArray(data.prototypes)) {
-          const renderingIds = new Set(
-            archiveItems.filter((x) => x._renderingCad).map((x) => String(x.id))
-          );
-          archiveItems = data.prototypes.map((row) => {
-            if (renderingIds.has(String(row.id)) && !row.specs?.cad_svg) {
-              return { ...row, _renderingCad: true };
-            }
-            return row;
-          });
-          renderArchiveGrid();
-        }
-      } catch (_) {}
-    }
-
     async function requestCadAnimation(createdProto) {
       createdProto._renderingCad = true;
       renderFeaturedDatasheet(createdProto);
       renderArchiveGrid();
+
+      const enSpec = createdProto.i18n?.en || createdProto.i18n?.de || {};
 
       try {
         const res = await fetch('/api/invent', {
@@ -1190,17 +1185,15 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'render_cad',
-            id: createdProto.id,
-            prototype: createdProto,
-            lang: currentLang
+            model_code: createdProto.model_code,
+            product_name: enSpec.product_name,
+            base_item: enSpec.base_item,
+            autonomous_routine: enSpec.autonomous_routine
           })
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.cad_svg) {
-          if (!createdProto.specs || Array.isArray(createdProto.specs)) {
-            createdProto.specs = { list: Array.isArray(createdProto.specs) ? createdProto.specs : [] };
-          }
-          createdProto.specs.cad_svg = data.cad_svg;
+          createdProto.cad_svg = data.cad_svg;
         }
       } catch (_) {
         // Keeps text datasheet cleanly if CAD generation fails
@@ -1209,6 +1202,7 @@
         archiveItems = archiveItems.map((item) =>
           String(item.id) === String(createdProto.id) ? createdProto : item
         );
+        saveStoredArchive(archiveItems);
         renderArchiveGrid();
 
         if (currentFeatured && String(currentFeatured.id) === String(createdProto.id)) {
@@ -1230,7 +1224,6 @@
       synthLoadingOverlay.classList.remove('hidden');
 
       try {
-        // Request 1: Fast bilingual text datasheet
         const res = await fetch('/api/invent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1238,15 +1231,15 @@
         });
         const payload = await res.json().catch(() => ({}));
         if (!res.ok || !payload.prototype) {
-          throw new Error(payload.error || `Server error (${res.status})`);
+          throw new Error(payload.error || `Error (${res.status})`);
         }
 
         const created = payload.prototype;
-        archiveItems = [created, ...archiveItems.filter((x) => x.id !== created.id)];
+        archiveItems = [created, ...archiveItems].slice(0, 18);
+        saveStoredArchive(archiveItems);
         itemInput.value = '';
-        startCooldown(6);
+        startCooldown(4);
 
-        // Request 2 (background): Custom animated SVG CAD schematic
         requestCadAnimation(created);
       } catch (err) {
         synthErrorBox.textContent = err.message || t('generic_err');
@@ -1257,10 +1250,17 @@
       }
     });
 
+    clearArchiveBtn.addEventListener('click', () => {
+      archiveItems = [];
+      currentFeatured = null;
+      saveStoredArchive([]);
+      renderFeaturedDatasheet(null);
+      renderArchiveGrid();
+    });
+
     document.querySelectorAll('.lang-btn').forEach((btn) => {
       btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
     });
-    document.getElementById('refreshArchiveBtn').addEventListener('click', loadArchive);
     document.getElementById('closeModalBtn').addEventListener('click', closeInspectModal);
     inspectModal.addEventListener('click', (e) => {
       if (e.target === inspectModal) closeInspectModal();
@@ -1270,8 +1270,6 @@
     });
 
     setLanguage(currentLang);
-    loadArchive();
-    setInterval(loadArchive, 15000);
   </script>
 </body>
 </html>
