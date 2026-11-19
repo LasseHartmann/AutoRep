@@ -19,6 +19,7 @@ Projektstruktur
 Damit statische Bilder und die Serverless-Route /api/invent auf Vercel sauber aufgelöst werden, sollte das Projekt wie folgt aufgebaut sein:
 
 autorep-autonomous-gym/
+
 ├── api/
 
 │   └── invent.js  # Serverless-Endpunkt (SSE-Streaming mit Gemini 3.5 Flash-Lite)
