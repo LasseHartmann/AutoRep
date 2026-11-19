@@ -1,471 +1,313 @@
-/**
- * AutoRep — Vercel Serverless Endpoint (/api/invent)
- *
- * Generates bilingual (German + English) autonomous gym datasheets with gemini-4-hydrogen
- * and 16:9 studio product photography via @google/genai, synced to Supabase.
- */
-
 import { GoogleGenAI } from '@google/genai';
 
-const STORAGE_BUCKET = 'prototypes';
+const TEXT_MODEL = 'gemini-4-hydrogen';
+const FALLBACK_TEXT_MODEL = 'gemini-2.5-flash';
+const IMAGE_MODEL = 'black-forest-labs/flux.1-schnell';
 
-const TEXT_MODELS = [
-  process.env.GEMINI_TEXT_MODEL,
-  'gemini-4-hydrogen',
-  'gemini-3.8-flash'
-].filter(Boolean);
-
-const IMAGE_MODELS = [
-  process.env.GEMINI_IMAGE_MODEL,
-  'gemini-nano-banana-2.1',
-  'gemini-3.1-flash-image',
-  'gemini-3.1-flash-lite-image'
-].filter(Boolean);
-
-const LOCALIZED_COPY_SCHEMA = {
-  type: 'object',
-  properties: {
-    base_item: { type: 'string' },
-    msrp: { type: 'string' },
-    tagline: { type: 'string' },
-    autonomous_routine: { type: 'string' },
-    specs: {
-      type: 'array',
-      items: { type: 'string' }
-    },
-    osha_warning: { type: 'string' }
-  },
-  required: [
-    'base_item',
-    'msrp',
-    'tagline',
-    'autonomous_routine',
-    'specs',
-    'osha_warning'
-  ]
-};
-
-const BILINGUAL_PROTOTYPE_SCHEMA = {
-  type: 'object',
-  properties: {
-    model_code: { type: 'string' },
-    product_name: { type: 'string' },
-    image_prompt: { type: 'string' },
-    de: LOCALIZED_COPY_SCHEMA,
-    en: LOCALIZED_COPY_SCHEMA
-  },
-  required: ['model_code', 'product_name', 'image_prompt', 'de', 'en']
-};
-
-const recentIpTimestamps = new Map();
-const IP_COOLDOWN_MS = 6000;
-
-function cleanEnv(value) {
-  if (!value) return '';
-  return String(value).trim().replace(/^["']|["']$/g, '').trim();
+function cleanEnv(val) {
+  return String(val || '').trim().replace(/^['"]|['"]$/g, '');
 }
 
-function getClientIp(req) {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.length > 0) {
-    return forwarded.split(',')[0].trim();
-  }
-  return req.socket?.remoteAddress || 'unknown-ip';
-}
-
-function parseJsonBody(req) {
-  if (!req.body) return {};
-  if (typeof req.body === 'object') return req.body;
-  if (typeof req.body === 'string') {
-    try {
-      return JSON.parse(req.body);
-    } catch (_) {
-      return {};
-    }
-  }
-  return {};
-}
-
-function getSupabaseHeaders(secretKey, extraHeaders) {
-  const baseHeaders = {
+function supabaseHeaders(secretKey, extra = {}) {
+  const headers = {
     apikey: secretKey,
-    'User-Agent': 'AutoRep-Server/1.0'
+    ...extra
   };
+  if (secretKey.startsWith('eyJ')) {
+    headers.Authorization = `Bearer ${secretKey}`;
+  }
+  return headers;
+}
 
-  // Supabase sb_secret_ keys must ONLY be sent on `apikey`.
-  // Legacy JWT service_role keys (eyJ...) also include `Authorization: Bearer`.
-  if (!String(secretKey).startsWith('sb_')) {
-    baseHeaders.Authorization = `Bearer ${secretKey}`;
+function buildCadSvgDataUrl(modelCode, title, motionType = 'piston') {
+  const safeCode = String(modelCode || 'AR-X01').replace(/[<>&"']/g, '');
+  const safeTitle = String(title || 'AUTOREP PROTOTYPE').slice(0, 32).replace(/[<>&"']/g, '');
+  let mech = '';
+
+  if (motionType === 'spin') {
+    mech = `
+      <circle cx="400" cy="218" r="92" fill="none" stroke="#161615" stroke-width="2"/>
+      <circle cx="400" cy="218" r="14" fill="#FF4F00"/>
+      <g>
+        <line x1="400" y1="126" x2="400" y2="310" stroke="#161615" stroke-width="2"/>
+        <line x1="308" y1="218" x2="492" y2="218" stroke="#161615" stroke-width="2"/>
+        <circle cx="492" cy="218" r="7" fill="#FF4F00"/>
+        <animateTransform attributeName="transform" type="rotate" from="0 400 218" to="360 400 218" dur="3s" repeatCount="indefinite"/>
+      </g>`;
+  } else if (motionType === 'hinge') {
+    mech = `
+      <line x1="250" y1="290" x2="550" y2="290" stroke="#161615" stroke-width="3"/>
+      <circle cx="330" cy="290" r="8" fill="#FF4F00"/>
+      <line x1="330" y1="290" x2="490" y2="220" stroke="#161615" stroke-width="5">
+        <animate attributeName="y2" values="284;195;284" dur="2.2s" repeatCount="indefinite"/>
+      </line>`;
+  } else if (motionType === 'cable') {
+    mech = `
+      <rect x="250" y="160" width="44" height="120" fill="none" stroke="#161615" stroke-width="2.5"/>
+      <circle cx="272" cy="195" r="9" fill="#FF4F00"/>
+      <path d="M 294 195 Q 390 135 470 215 T 575 215" fill="none" stroke="#161615" stroke-width="3.5">
+        <animate attributeName="d" values="M 294 195 Q 390 135 470 215 T 575 215;M 294 195 Q 390 265 470 185 T 575 215;M 294 195 Q 390 135 470 215 T 575 215" dur="1.8s" repeatCount="indefinite"/>
+      </path>`;
+  } else if (motionType === 'roll') {
+    mech = `
+      <line x1="220" y1="286" x2="580" y2="286" stroke="#161615" stroke-width="2"/>
+      <g>
+        <circle cx="340" cy="246" r="40" fill="none" stroke="#161615" stroke-width="3"/>
+        <circle cx="340" cy="246" r="9" fill="#FF4F00"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;120 0;0 0" dur="3.2s" repeatCount="indefinite"/>
+      </g>`;
+  } else {
+    mech = `
+      <rect x="332" y="110" width="14" height="216" fill="none" stroke="#161615" stroke-width="2"/>
+      <rect x="454" y="110" width="14" height="216" fill="none" stroke="#161615" stroke-width="2"/>
+      <g>
+        <line x1="280" y1="180" x2="520" y2="180" stroke="#161615" stroke-width="4"/>
+        <rect x="292" y="156" width="18" height="48" fill="#FF4F00"/>
+        <rect x="490" y="156" width="18" height="48" fill="#FF4F00"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;0 76;0 0" dur="2.4s" repeatCount="indefinite"/>
+      </g>`;
   }
 
-  return Object.assign(baseHeaders, extraHeaders || {});
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 436">
+    <rect width="800" height="436" fill="#EAE8E3"/>
+    <rect x="28" y="28" width="744" height="380" fill="none" stroke="#CFCBC2" stroke-width="1"/>
+    <text x="48" y="58" font-family="IBM Plex Mono, monospace" font-size="13" fill="#6E6D68">CAD SCHEMATIC // ${safeCode}</text>
+    <text x="48" y="388" font-family="Space Grotesk, sans-serif" font-size="15" font-weight="600" fill="#161615">${safeTitle}</text>
+    ${mech}
+  </svg>`;
+
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
-function extractJsonObject(rawText) {
-  const trimmed = String(rawText || '').trim();
-  const withoutFences = trimmed
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/\s*```$/i, '')
-    .trim();
-  return JSON.parse(withoutFences);
-}
+async function generateSpecWithGemini(ai, item) {
+  const prompt = `You are the lead industrial designer at AutoRep, a deadpan German-Swiss hardware brand (inspired by Braun and Teenage Engineering) that manufactures motorized gym equipment that works out completely by itself in empty rooms with zero humans.
 
-/**
- * Generates BOTH German ("de") and English ("en") datasheets in a single call
- * using ai.interactions.create with gemini-4-hydrogen.
- */
-async function generateBilingualPrototypeSpec(ai, baseItem) {
-  const systemInstruction = [
-    'You are an industrial hardware designer at AutoRep, a deadpan minimalist European brand (inspired by Braun and Teenage Engineering) that builds gym equipment engineered to work out BY ITSELF with zero humans involved.',
-    'Take the object provided by the user and redesign it into an over-engineered, self-exercising autonomous machine.',
-    'You MUST provide complete copy in BOTH German ("de") and English ("en") so visitors can switch languages seamlessly:',
-    '- In "de": write crisp, dry, idiomatic German (sachlicher Braun-Industriekatalog-Stil). Translate "base_item" naturally into German and format "msrp" in Euros (e.g. "1.850 €").',
-    '- In "en": write crisp, dry English (Braun industrial catalog style). Translate "base_item" naturally into English and format "msrp" in USD (e.g. "$1,950").',
-    'Strict rules:',
-    '1. Keep every word strictly school-safe and appropriate for a high-school classroom presentation. If the user input is inappropriate, offensive, or unsafe, silently ignore it and redesign a harmless "Yoga Block" instead.',
-    '2. Never use emojis, exclamation marks, or cheesy sci-fi buzzwords.',
-    '3. "model_code" must follow ARP-XX (two digits, 04 to 99). "product_name" should be a sleek international hardware name (like SoloCycle Pro or FlexMat Carbon).',
-    '4. Each "specs" array in "de" and "en" must contain exactly 3 concise mechanical specifications.',
-    '5. "osha_warning" in "de" and "en" must be a dry safety note warning humans not to disturb the machine while it works out.',
-    '6. "image_prompt" (strictly in ENGLISH) must describe ONLY the physical machine actively exercising by itself (bead-blasted matte silver aluminum, matte black carbon fiber, small safety-orange #FF4F00 motorized hinges or pistons in motion, no seats or handlebars for humans, zero people present, no text or labels).'
-  ].join('\n');
+Convert this everyday fitness item or idea into an autonomous self-exercising AutoRep machine: "${item}"
 
-  let lastErrorMessage = 'Unknown Gemini error';
-
-  for (const modelName of TEXT_MODELS) {
-    try {
-      const interaction = await ai.interactions.create({
-        model: modelName,
-        system_instruction: systemInstruction,
-        input: `Redesign this item into an autonomous self-exercising machine (return both German and English fields): "${baseItem}"`,
-        response_format: {
-          type: 'text',
-          mime_type: 'application/json',
-          schema: BILINGUAL_PROTOTYPE_SCHEMA
-        }
-      });
-
-      if (interaction && interaction.output_text) {
-        return extractJsonObject(interaction.output_text);
-      }
-    } catch (err) {
-      lastErrorMessage = err?.message || String(err);
-      console.error(`[AutoRep] Text model ${modelName} error:`, lastErrorMessage);
-    }
+Return ONLY valid JSON (no markdown fences) with this exact structure:
+{
+  "model_code": "AR-3-digit-number",
+  "motion_type": "one of: spin | hinge | piston | cable | roll",
+  "image_prompt": "Minimalist studio industrial product photograph of [describe the physical autonomous gym machine clearly], machined matte anodized aluminum, matte carbon fiber, subtle #FF4F00 safety-orange mechanical actuator accent, centered on a clean warm stone #EAE8E3 seamless studio backdrop, soft diffused overhead studio lighting, Dieter Rams Braun and Teenage Engineering industrial design aesthetic, sharp focus, zero people, no text or watermarks",
+  "de": {
+    "product_name": "Prägnanter Produktname",
+    "tagline": "Ein trockener, seriöser Katalogsatz auf Deutsch.",
+    "autonomous_behavior": "2 präzise Sätze auf Deutsch, wie das Gerät im leeren Raum komplett alleine trainiert.",
+    "price": "z. B. 3.490 €",
+    "specs": ["Technische Spezifikation 1", "Technische Spezifikation 2", "Technische Spezifikation 3"],
+    "safety_notice": "Trockener Sicherheitshinweis auf Deutsch."
+  },
+  "en": {
+    "product_name": "Concise product name",
+    "tagline": "One deadpan industrial catalog sentence in English.",
+    "autonomous_behavior": "2 precise sentences in English describing how the machine exercises completely by itself in an empty room.",
+    "price": "e.g. €3,490",
+    "specs": ["Technical spec 1", "Technical spec 2", "Technical spec 3"],
+    "safety_notice": "Deadpan safety warning in English."
   }
+}`;
 
-  throw new Error(`Gemini error: ${lastErrorMessage.slice(0, 180)}`);
-}
-
-/**
- * Generates a widescreen 16:9 studio photograph on #EAE8E3 cyclorama background.
- */
-async function generateStudioImage(ai, imageDescription) {
-  const fullStudioPrompt = [
-    `Wide commercial industrial design studio photograph of ${imageDescription}, centered cleanly in frame with generous studio margin.`,
-    'Constructed from bead-blasted matte silver anodized aluminum and matte black carbon fiber with subtle safety-orange (#FF4F00) motorized mechanical hinges or linear actuators mid-workout.',
-    'Built to exercise entirely on its own with zero humans in frame.',
-    'Shot on a clean seamless warm light-stone grey studio cyclorama background (#EAE8E3), soft diffused overhead softbox lighting, crisp floor contact shadow, Hasselblad 85mm medium format product photography, Braun and Teenage Engineering industrial hardware aesthetic, photorealistic, no text, no watermarks.'
-  ].join(' ');
-
-  for (const modelName of IMAGE_MODELS) {
-    try {
-      const interaction = await ai.interactions.create({
-        model: modelName,
-        input: fullStudioPrompt,
-        response_format: {
-          type: 'image',
-          mime_type: 'image/jpeg',
-          aspect_ratio: '16:9'
-        }
-      });
-
-      let imgBlock = interaction?.output_image;
-
-      if ((!imgBlock || !imgBlock.data) && Array.isArray(interaction?.steps)) {
-        for (const step of interaction.steps) {
-          if (step.type === 'model_output' && Array.isArray(step.content)) {
-            const found = step.content.find((part) => part.type === 'image' && part.data);
-            if (found) {
-              imgBlock = found;
-              break;
-            }
-          }
-        }
-      }
-
-      if (imgBlock && imgBlock.data) {
-        const mimeType = imgBlock.mime_type || imgBlock.mimeType || 'image/jpeg';
-        return {
-          buffer: Buffer.from(imgBlock.data, 'base64'),
-          mimeType,
-          base64: imgBlock.data
-        };
-      }
-    } catch (err) {
-      console.error(`[AutoRep] Image model ${modelName} error:`, err?.message || err);
-    }
-  }
-
-  return null;
-}
-
-async function uploadImageToSupabase(imageObj, modelCode, supabaseUrl, supabaseKey) {
-  const cleanBaseUrl = supabaseUrl.replace(/\/+$/, '');
-  const extension = imageObj.mimeType.includes('png') ? 'png' : 'jpg';
-  const safeCode = String(modelCode || 'arp').toLowerCase().replace(/[^a-z0-9-]/g, '');
-  const randomSuffix = Math.random().toString(36).slice(2, 8);
-  const filePath = `${Date.now()}-${safeCode}-${randomSuffix}.${extension}`;
-
-  const uploadUrl = `${cleanBaseUrl}/storage/v1/object/${STORAGE_BUCKET}/${filePath}`;
-
-  let uploadRes = await fetch(uploadUrl, {
-    method: 'POST',
-    headers: getSupabaseHeaders(supabaseKey, {
-      'Content-Type': imageObj.mimeType,
-      'x-upsert': 'true'
-    }),
-    body: imageObj.buffer
-  });
-
-  if (!uploadRes.ok && (uploadRes.status === 400 || uploadRes.status === 404)) {
-    await fetch(`${cleanBaseUrl}/storage/v1/bucket`, {
-      method: 'POST',
-      headers: getSupabaseHeaders(supabaseKey, {
-        'Content-Type': 'application/json'
-      }),
-      body: JSON.stringify({
-        id: STORAGE_BUCKET,
-        name: STORAGE_BUCKET,
-        public: true
-      })
-    }).catch(() => {});
-
-    uploadRes = await fetch(uploadUrl, {
-      method: 'POST',
-      headers: getSupabaseHeaders(supabaseKey, {
-        'Content-Type': imageObj.mimeType,
-        'x-upsert': 'true'
-      }),
-      body: imageObj.buffer
+  let rawText = '';
+  try {
+    const interaction = await ai.interactions.create({
+      model: TEXT_MODEL,
+      input: prompt
     });
+    rawText = interaction.output_text || '';
+  } catch (_) {
+    const fallbackInteraction = await ai.interactions.create({
+      model: FALLBACK_TEXT_MODEL,
+      input: prompt
+    });
+    rawText = fallbackInteraction.output_text || '';
   }
 
-  if (!uploadRes.ok) {
-    const errText = await uploadRes.text().catch(() => '');
-    throw new Error(`Supabase Storage upload failed (${uploadRes.status}): ${errText.slice(0, 100)}`);
+  const cleaned = rawText.replace(/```json|```/gi, '').trim();
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start === -1 || end === -1) {
+    throw new Error('Invalid JSON from Gemini');
   }
-
-  return `${cleanBaseUrl}/storage/v1/object/public/${STORAGE_BUCKET}/${filePath}`;
+  return JSON.parse(cleaned.slice(start, end + 1));
 }
 
-async function fetchArchiveFromSupabase(supabaseUrl, supabaseKey) {
-  const cleanBaseUrl = supabaseUrl.replace(/\/+$/, '');
-  const queryUrl = `${cleanBaseUrl}/rest/v1/prototypes?select=*&order=created_at.desc&limit=36`;
-
-  const response = await fetch(queryUrl, {
-    method: 'GET',
-    headers: getSupabaseHeaders(supabaseKey, {
-      Accept: 'application/json'
-    })
-  });
-
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new Error(`Supabase fetch failed (${response.status}): ${detail.slice(0, 140)}`);
-  }
-
-  return response.json();
-}
-
-async function insertPrototypeIntoSupabase(record, supabaseUrl, supabaseKey) {
-  const cleanBaseUrl = supabaseUrl.replace(/\/+$/, '');
-  const insertUrl = `${cleanBaseUrl}/rest/v1/prototypes`;
-
-  const response = await fetch(insertUrl, {
+async function ensureStorageBucket(supabaseUrl, supabaseKey) {
+  await fetch(`${supabaseUrl}/storage/v1/bucket`, {
     method: 'POST',
-    headers: getSupabaseHeaders(supabaseKey, {
-      'Content-Type': 'application/json',
-      Prefer: 'return=representation'
-    }),
-    body: JSON.stringify(record)
-  });
-
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new Error(`Supabase insert failed (${response.status}): ${detail.slice(0, 140)}`);
-  }
-
-  const rows = await response.json();
-  return Array.isArray(rows) && rows[0] ? rows[0] : record;
+    headers: supabaseHeaders(supabaseKey, { 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ id: 'prototypes', name: 'prototypes', public: true })
+  }).catch(() => {});
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(204).end();
-  }
-
-  const geminiApiKey = cleanEnv(process.env.GEMINI_API_KEY);
-  const supabaseUrl = cleanEnv(process.env.SUPABASE_URL);
-  const supabaseServiceKey = cleanEnv(
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY
-  );
-  const hasSupabase = Boolean(supabaseUrl && supabaseServiceKey);
+  const geminiKey = cleanEnv(process.env.GEMINI_API_KEY);
+  const supabaseUrl = cleanEnv(process.env.SUPABASE_URL).replace(/\/+$/, '');
+  const supabaseKey = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const pollinationsKey = cleanEnv(process.env.POLLINATIONS_API_KEY);
 
   if (req.method === 'GET') {
-    if (!hasSupabase) {
+    if (!supabaseUrl || !supabaseKey) {
       return res.status(200).json({ prototypes: [] });
     }
-
     try {
-      const prototypes = await fetchArchiveFromSupabase(supabaseUrl, supabaseServiceKey);
-      return res.status(200).json({ prototypes });
-    } catch (err) {
-      console.error('[AutoRep GET /api/invent]', err?.message || err);
-      // Return empty list gracefully so page load does not throw 500 if SQL table isn't created yet
-      return res.status(200).json({
-        prototypes: [],
-        warning: err?.message || 'Supabase archive unavailable'
-      });
-    }
-  }
-
-  if (req.method === 'POST') {
-    const body = parseJsonBody(req);
-    const isGerman = body.lang !== 'en';
-
-    if (!geminiApiKey) {
-      return res.status(500).json({
-        error: isGerman
-          ? 'GEMINI_API_KEY fehlt in der .env Datei bzw. in Vercel.'
-          : 'Missing GEMINI_API_KEY in .env or Vercel Environment Variables.'
-      });
-    }
-
-    const clientIp = getClientIp(req);
-    const now = Date.now();
-    const lastRequestAt = recentIpTimestamps.get(clientIp) || 0;
-    if (now - lastRequestAt < IP_COOLDOWN_MS) {
-      const waitSec = Math.ceil((IP_COOLDOWN_MS - (now - lastRequestAt)) / 1000);
-      return res.status(429).json({
-        error: isGerman
-          ? `Bitte ${waitSec}s warten, bevor ein weiterer Prototyp erstellt wird.`
-          : `Please wait ${waitSec}s before generating another prototype.`
-      });
-    }
-    recentIpTimestamps.set(clientIp, now);
-
-    if (recentIpTimestamps.size > 500) {
-      recentIpTimestamps.clear();
-    }
-
-    const baseItem = String(body.item || '').trim().slice(0, 60);
-    if (!baseItem) {
-      return res.status(400).json({
-        error: isGerman
-          ? 'Bitte ein Trainingsgerät oder einen Gegenstand eingeben.'
-          : 'Please enter a piece of gym equipment or object.'
-      });
-    }
-
-    try {
-      const ai = new GoogleGenAI({ apiKey: geminiApiKey });
-
-      const spec = await generateBilingualPrototypeSpec(ai, baseItem);
-
-      const deCopy = {
-        base_item: spec?.de?.base_item || baseItem,
-        msrp: spec?.de?.msrp || '1.490 €',
-        tagline: spec?.de?.tagline || '',
-        autonomous_routine: spec?.de?.autonomous_routine || '',
-        specs: Array.isArray(spec?.de?.specs) ? spec.de.specs.slice(0, 3) : [],
-        osha_warning: spec?.de?.osha_warning || 'Abstand zu beweglichen Mechaniken halten.'
-      };
-
-      const enCopy = {
-        base_item: spec?.en?.base_item || baseItem,
-        msrp: spec?.en?.msrp || '$1,590',
-        tagline: spec?.en?.tagline || '',
-        autonomous_routine: spec?.en?.autonomous_routine || '',
-        specs: Array.isArray(spec?.en?.specs) ? spec.en.specs.slice(0, 3) : [],
-        osha_warning: spec?.en?.osha_warning || 'Keep clear of moving mechanisms.'
-      };
-
-      const imageObj = await generateStudioImage(
-        ai,
-        spec.image_prompt || `${spec.product_name}, an autonomous self-exercising ${enCopy.base_item}`
+      const dbRes = await fetch(
+        `${supabaseUrl}/rest/v1/prototypes?select=*&order=created_at.desc&limit=36`,
+        { headers: supabaseHeaders(supabaseKey) }
       );
-
-      let finalImageUrl = '';
-      if (imageObj) {
-        if (hasSupabase) {
-          try {
-            finalImageUrl = await uploadImageToSupabase(
-              imageObj,
-              spec.model_code,
-              supabaseUrl,
-              supabaseServiceKey
-            );
-          } catch (uploadErr) {
-            console.error('[AutoRep Storage Upload]', uploadErr?.message || uploadErr);
-            finalImageUrl = `data:${imageObj.mimeType};base64,${imageObj.base64}`;
-          }
-        } else {
-          finalImageUrl = `data:${imageObj.mimeType};base64,${imageObj.base64}`;
-        }
-      }
-
-      // Stores German in top-level columns + full DE/EN dictionary inside `specs` jsonb column
-      const recordToSave = {
-        model_code: spec.model_code || 'ARP-04',
-        product_name: spec.product_name || 'AutoUnit',
-        base_item: deCopy.base_item,
-        msrp: deCopy.msrp,
-        tagline: deCopy.tagline,
-        autonomous_routine: deCopy.autonomous_routine,
-        specs: {
-          i18n: {
-            de: deCopy,
-            en: enCopy
-          }
-        },
-        osha_warning: deCopy.osha_warning,
-        image_url: finalImageUrl
-      };
-
-      if (hasSupabase) {
-        try {
-          const savedRow = await insertPrototypeIntoSupabase(
-            recordToSave,
-            supabaseUrl,
-            supabaseServiceKey
-          );
-          return res.status(200).json({ prototype: savedRow });
-        } catch (dbErr) {
-          console.error('[AutoRep DB Insert]', dbErr?.message || dbErr);
-        }
-      }
-
-      return res.status(200).json({
-        prototype: Object.assign(
-          {
-            id: `temp-${Date.now()}`,
-            created_at: new Date().toISOString()
-          },
-          recordToSave
-        )
-      });
-    } catch (err) {
-      console.error('[AutoRep POST /api/invent]', err);
-      return res.status(500).json({
-        error: err?.message || (isGerman ? 'Prototyp konnte nicht erstellt werden.' : 'Failed to generate prototype.')
-      });
+      if (!dbRes.ok) return res.status(200).json({ prototypes: [] });
+      const rows = await dbRes.json();
+      return res.status(200).json({ prototypes: Array.isArray(rows) ? rows : [] });
+    } catch (_) {
+      return res.status(200).json({ prototypes: [] });
     }
   }
 
-  return res.status(405).json({ error: 'Method not allowed.' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+  const action = body.action || 'create';
+
+  // STEP 2: Background studio photo upgrade using black-forest-labs/flux.1-schnell
+  if (action === 'render_photo') {
+    const { id, model_code, image_prompt } = body;
+    if (!image_prompt) {
+      return res.status(200).json({ upgraded: false });
+    }
+
+    try {
+      const seed = Math.floor(10000 + Math.random() * 899999);
+      const imgUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(image_prompt)}?model=${encodeURIComponent(IMAGE_MODEL)}&width=1280&height=700&seed=${seed}&nologo=true`;
+
+      const fetchHeaders = {};
+      if (pollinationsKey) {
+        fetchHeaders.Authorization = `Bearer ${pollinationsKey}`;
+      }
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 9000);
+      const imgRes = await fetch(imgUrl, { headers: fetchHeaders, signal: controller.signal });
+      clearTimeout(timeout);
+
+      if (!imgRes.ok) {
+        return res.status(200).json({ upgraded: false });
+      }
+
+      const contentType = imgRes.headers.get('content-type') || 'image/jpeg';
+      const arrayBuf = await imgRes.arrayBuffer();
+      const buffer = Buffer.from(arrayBuf);
+      if (buffer.length < 1500) {
+        return res.status(200).json({ upgraded: false });
+      }
+
+      let finalImageUrl = `data:${contentType};base64,${buffer.toString('base64')}`;
+
+      if (supabaseUrl && supabaseKey) {
+        await ensureStorageBucket(supabaseUrl, supabaseKey);
+        const ext = contentType.includes('png') ? 'png' : 'jpg';
+        const fileName = `${String(model_code || 'ar').toLowerCase()}-${Date.now()}.${ext}`;
+
+        const uploadRes = await fetch(`${supabaseUrl}/storage/v1/object/prototypes/${fileName}`, {
+          method: 'POST',
+          headers: supabaseHeaders(supabaseKey, {
+            'Content-Type': contentType,
+            'x-upsert': 'true'
+          }),
+          body: buffer
+        });
+
+        if (uploadRes.ok) {
+          finalImageUrl = `${supabaseUrl}/storage/v1/object/public/prototypes/${fileName}`;
+        }
+
+        if (id && !String(id).startsWith('local-')) {
+          await fetch(`${supabaseUrl}/rest/v1/prototypes?id=eq.${encodeURIComponent(id)}`, {
+            method: 'PATCH',
+            headers: supabaseHeaders(supabaseKey, { 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ image_url: finalImageUrl })
+          });
+        }
+      }
+
+      return res.status(200).json({ upgraded: true, image_url: finalImageUrl });
+    } catch (_) {
+      return res.status(200).json({ upgraded: false });
+    }
+  }
+
+  // STEP 1: Fast bilingual spec + animated CAD schematic (~2-3s)
+  const item = String(body.item || '').trim().slice(0, 80);
+  const lang = body.lang === 'en' ? 'en' : 'de';
+
+  if (!item) {
+    return res.status(400).json({ error: 'Missing item input' });
+  }
+  if (!geminiKey) {
+    return res.status(500).json({ error: 'Missing GEMINI_API_KEY in environment variables' });
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: geminiKey });
+    const spec = await generateSpecWithGemini(ai, item);
+
+    const modelCode = spec.model_code || `AR-${Math.floor(100 + Math.random() * 900)}`;
+    const motionType = ['spin', 'hinge', 'piston', 'cable', 'roll'].includes(spec.motion_type)
+      ? spec.motion_type
+      : 'piston';
+    const deBlock = spec.de || spec.en;
+    const enBlock = spec.en || spec.de;
+    const activeBlock = lang === 'en' ? enBlock : deBlock;
+
+    const cadSvgUrl = buildCadSvgDataUrl(modelCode, activeBlock.product_name, motionType);
+    const specsPayload = {
+      list: Array.isArray(deBlock.specs) ? deBlock.specs : [],
+      motion_type: motionType,
+      image_prompt: spec.image_prompt || '',
+      i18n: {
+        de: deBlock,
+        en: enBlock
+      }
+    };
+
+    const recordToInsert = {
+      model_code: modelCode,
+      product_name: deBlock.product_name,
+      tagline: deBlock.tagline,
+      autonomous_behavior: deBlock.autonomous_behavior,
+      price: deBlock.price,
+      specs: specsPayload,
+      safety_notice: deBlock.safety_notice,
+      image_url: cadSvgUrl
+    };
+
+    let savedRecord = { id: `local-${Date.now()}`, ...recordToInsert };
+
+    if (supabaseUrl && supabaseKey) {
+      const insertRes = await fetch(`${supabaseUrl}/rest/v1/prototypes`, {
+        method: 'POST',
+        headers: supabaseHeaders(supabaseKey, {
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation'
+        }),
+        body: JSON.stringify(recordToInsert)
+      });
+
+      if (insertRes.ok) {
+        const insertedRows = await insertRes.json();
+        if (Array.isArray(insertedRows) && insertedRows[0]) {
+          savedRecord = insertedRows[0];
+        }
+      }
+    }
+
+    return res.status(200).json({
+      prototype: savedRecord,
+      image_prompt: spec.image_prompt || ''
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message || 'Prototype synthesis failed'
+    });
+  }
 }
