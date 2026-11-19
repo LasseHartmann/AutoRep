@@ -91,15 +91,9 @@
       background: var(--accent);
     }
 
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-    }
-
     nav {
       display: flex;
-      gap: 22px;
+      gap: 24px;
     }
 
     nav a {
@@ -112,27 +106,6 @@
 
     nav a:hover {
       color: var(--ink);
-    }
-
-    .lang-switch {
-      display: inline-flex;
-      border: 1px solid var(--border);
-      background: var(--card);
-    }
-
-    .lang-btn {
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      padding: 6px 10px;
-      cursor: pointer;
-    }
-
-    .lang-btn.active {
-      background: var(--ink);
-      color: var(--bg);
     }
 
     section {
@@ -431,6 +404,11 @@
       to { transform: rotate(360deg); }
     }
 
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
     .loading-text {
       font-family: var(--font-mono);
       font-size: 0.78rem;
@@ -448,10 +426,30 @@
       font-size: 0.75rem;
     }
 
-    .spec-strip-left {
+    .spec-strip-left,
+    .spec-strip-right {
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 0.9s ease-in-out infinite;
     }
 
     .detail-code {
@@ -530,6 +528,10 @@
       font-family: var(--font-mono);
       font-size: 0.75rem;
       color: var(--muted);
+    }
+
+    .placeholder-muted {
+      color: var(--border);
     }
 
     .archive-card {
@@ -661,17 +663,11 @@
         <span class="brand-dot"></span>
         <span>AutoRep</span>
       </a>
-      <div class="nav-right">
-        <nav>
-          <a href="#lineup" data-i18n="nav_lineup">Geräte</a>
-          <a href="#lab" data-i18n="nav_lab">F&amp;E-Labor</a>
-          <a href="#archive" data-i18n="nav_archive">Archiv</a>
-        </nav>
-        <div class="lang-switch" role="group" aria-label="Language switch">
-          <button type="button" class="lang-btn active" data-lang="de">DE</button>
-          <button type="button" class="lang-btn" data-lang="en">EN</button>
-        </div>
-      </div>
+      <nav>
+        <a href="#lineup">Geräte</a>
+        <a href="#lab">F&amp;E-Labor</a>
+        <a href="#archive">Archiv</a>
+      </nav>
     </div>
   </header>
 
@@ -679,19 +675,19 @@
     <section>
       <div class="container">
         <div class="hero-copy">
-          <p class="eyebrow" data-i18n="hero_eyebrow">Autonome Trainingsarchitektur</p>
-          <h1 class="hero-title" data-i18n="hero_title">Fitnessgeräte, die ihr Training selbst erledigen.</h1>
-          <p class="hero-lead" data-i18n="hero_lead">
+          <p class="eyebrow">Autonome Trainingsarchitektur</p>
+          <h1 class="hero-title">Fitnessgeräte, die ihr Training selbst erledigen.</h1>
+          <p class="hero-lead">
             Jede AutoRep-Maschine führt präzise, vollmotorisierte Trainingssätze in leeren Räumen aus. Keine menschliche Beteiligung erforderlich.
           </p>
           <div class="hero-actions">
-            <a href="#lab" class="btn btn-primary" data-i18n="hero_cta_primary">Prototyp entwickeln</a>
-            <a href="#lineup" class="btn btn-secondary" data-i18n="hero_cta_secondary">Serienmodelle ansehen</a>
+            <a href="#lab" class="btn btn-primary">Prototyp entwickeln</a>
+            <a href="#lineup" class="btn btn-secondary">Serienmodelle ansehen</a>
           </div>
         </div>
 
         <div class="media-frame">
-          <img src="images/hero.jpg" alt="AutoRep Facility" onerror="this.style.display='none';" />
+          <img src="images/hero.jpg" alt="AutoRep Trainingshalle" onerror="this.style.display='none';" />
           <div class="media-fallback">images/hero.jpg</div>
         </div>
       </div>
@@ -701,10 +697,10 @@
       <div class="container">
         <div class="section-head">
           <div>
-            <p class="eyebrow" data-i18n="lineup_eyebrow">Serie 01</p>
-            <h2 class="section-title" data-i18n="lineup_title">Serienmodelle</h2>
+            <p class="eyebrow">Serie 01</p>
+            <h2 class="section-title">Serienmodelle</h2>
           </div>
-          <p class="section-desc" data-i18n="lineup_desc">
+          <p class="section-desc">
             Gefertigt aus eloxiertem Aluminium und Sichtcarbon für den unbeaufsichtigten 24-Stunden-Dauerbetrieb.
           </p>
         </div>
@@ -717,18 +713,18 @@
       <div class="container">
         <div class="section-head">
           <div>
-            <p class="eyebrow" data-i18n="lab_eyebrow">Abteilung Produktentwicklung</p>
-            <h2 class="section-title" data-i18n="lab_title">AutoRep F&amp;E-Synthesizer</h2>
+            <p class="eyebrow">Abteilung Produktentwicklung</p>
+            <h2 class="section-title">AutoRep F&amp;E-Synthesizer</h2>
           </div>
-          <p class="section-desc" data-i18n="lab_desc">
-            Geben Sie ein beliebiges Trainingsgerät ein. Unser System konstruiert daraus ein technisches Datenblatt für das gemeinsame Archiv.
+          <p class="section-desc">
+            Geben Sie ein beliebiges Trainingsgerät ein. Unser System konstruiert daraus live ein technisches Datenblatt.
           </p>
         </div>
 
         <div class="lab-grid">
           <div class="lab-panel">
             <form id="synthesizerForm">
-              <label for="itemInput" class="field-label" data-i18n="lab_label">Basis-Gegenstand</label>
+              <label for="itemInput" class="field-label">Basis-Gegenstand</label>
               <input
                 id="itemInput"
                 type="text"
@@ -736,14 +732,13 @@
                 maxlength="80"
                 required
                 placeholder="z. B. Kettlebell, Rudergerät, Springseil ..."
-                data-i18n-placeholder="lab_placeholder"
               />
               <button type="submit" id="synthesizeBtn" class="btn btn-primary" style="width: 100%;">
                 Prototyp generieren
               </button>
             </form>
-            <p class="lab-hint" data-i18n="lab_hint">
-              Jedes generierte Datenblatt wird live gespeichert und ist für den gesamten Kurs sichtbar.
+            <p class="lab-hint">
+              Jedes generierte Datenblatt wird in Echtzeit gestreamt und lokal in Ihrem Browser-Archiv gespeichert.
             </p>
             <div id="synthErrorBox" class="error-box hidden"></div>
           </div>
@@ -751,9 +746,11 @@
           <div class="datasheet-shell">
             <div id="synthLoadingOverlay" class="loading-overlay hidden">
               <div class="spinner"></div>
-              <p class="loading-text" data-i18n="lab_step_design">Technisches Datenblatt wird berechnet ...</p>
+              <p class="loading-text">Verbindung zum F&amp;E-Synthesizer ...</p>
             </div>
-            <div id="featuredDatasheet"></div>
+            <div id="featuredDatasheet">
+              <div class="datasheet-empty">Ihr generiertes Datenblatt erscheint hier.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -763,11 +760,11 @@
       <div class="container">
         <div class="section-head">
           <div>
-            <p class="eyebrow" data-i18n="archive_eyebrow">Gemeinsames Verzeichnis</p>
-            <h2 class="section-title" data-i18n="archive_title">Entwicklungs-Archiv</h2>
+            <p class="eyebrow">Lokales Verzeichnis</p>
+            <h2 class="section-title">Entwicklungs-Archiv</h2>
           </div>
-          <button type="button" id="refreshArchiveBtn" class="btn btn-secondary" data-i18n="archive_refresh">
-            Aktualisieren
+          <button type="button" id="clearArchiveBtn" class="btn btn-secondary hidden">
+            Archiv leeren
           </button>
         </div>
 
@@ -779,8 +776,8 @@
   <div id="inspectModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-top">
-        <span data-i18n="modal_label">Technisches Datenblatt</span>
-        <button type="button" id="closeModalBtn" class="modal-close" data-i18n="modal_close">Schließen ✕</button>
+        <span>Technisches Datenblatt</span>
+        <button type="button" id="closeModalBtn" class="modal-close">Schließen ✕</button>
       </div>
       <div id="modalBodyContent"></div>
     </div>
@@ -788,142 +785,60 @@
 
   <footer>
     <div class="container footer-inner">
-      <span>AutoRep GmbH — Industrial Autonomous Fitness</span>
-      <span data-i18n="footer_note">Menschlicher Zutritt zur Trainingsfläche während des Betriebs untersagt.</span>
+      <span>AutoRep GmbH — Industrielle Autonome Trainingsarchitektur</span>
+      <span>Menschlicher Zutritt zur Trainingsfläche während des Betriebs untersagt.</span>
     </div>
   </footer>
 
   <script>
-    const I18N = {
-      de: {
-        nav_lineup: 'Geräte',
-        nav_lab: 'F&E-Labor',
-        nav_archive: 'Archiv',
-        hero_eyebrow: 'Autonome Trainingsarchitektur',
-        hero_title: 'Fitnessgeräte, die ihr Training selbst erledigen.',
-        hero_lead: 'Jede AutoRep-Maschine führt präzise, vollmotorisierte Trainingssätze in leeren Räumen aus. Keine menschliche Beteiligung erforderlich.',
-        hero_cta_primary: 'Prototyp entwickeln',
-        hero_cta_secondary: 'Serienmodelle ansehen',
-        lineup_eyebrow: 'Serie 01',
-        lineup_title: 'Serienmodelle',
-        lineup_desc: 'Gefertigt aus eloxiertem Aluminium und Sichtcarbon für den unbeaufsichtigten 24-Stunden-Dauerbetrieb.',
-        lab_eyebrow: 'Abteilung Produktentwicklung',
-        lab_title: 'AutoRep F&E-Synthesizer',
-        lab_desc: 'Geben Sie ein beliebiges Trainingsgerät ein. Unser System konstruiert daraus ein technisches Datenblatt für das gemeinsame Archiv.',
-        lab_label: 'Basis-Gegenstand',
-        lab_placeholder: 'z. B. Kettlebell, Rudergerät, Springseil ...',
-        lab_submit: 'Prototyp generieren',
-        lab_wait: 'Bitte {s}s warten',
-        lab_hint: 'Jedes generierte Datenblatt wird live gespeichert und ist für den gesamten Kurs sichtbar.',
-        lab_step_design: 'Technisches Datenblatt wird berechnet ...',
-        generic_err: 'Prototyp konnte nicht generiert werden. Bitte prüfen Sie Terminal & API-Keys.',
-        datasheet_empty: 'Ihr generiertes Datenblatt erscheint hier.',
-        protocol_heading: 'Autonomes Trainingsprotokoll',
-        specs_heading: 'Spezifikationen',
-        safety_prefix: 'Sicherheitshinweis: ',
-        inspect_cta: 'Datenblatt öffnen →',
-        archive_eyebrow: 'Gemeinsames Verzeichnis',
-        archive_title: 'Entwicklungs-Archiv',
-        archive_refresh: 'Aktualisieren',
-        archive_empty: 'Noch keine Prototypen im Archiv. Entwickeln Sie oben den ersten Entwurf.',
-        modal_label: 'Technisches Datenblatt',
-        modal_close: 'Schließen ✕',
-        footer_note: 'Menschlicher Zutritt zur Trainingsfläche während des Betriebs untersagt.'
-      },
-      en: {
-        nav_lineup: 'Machines',
-        nav_lab: 'R&D Lab',
-        nav_archive: 'Archive',
-        hero_eyebrow: 'Autonomous Training Architecture',
-        hero_title: 'Gym equipment that works out by itself.',
-        hero_lead: 'Every AutoRep machine executes precise, motorized training sets inside empty rooms. Zero human participation required.',
-        hero_cta_primary: 'Synthesize Prototype',
-        hero_cta_secondary: 'View Production Line',
-        lineup_eyebrow: 'Series 01',
-        lineup_title: 'Production Lineup',
-        lineup_desc: 'Machined from anodized aluminum and matte carbon fiber for unattended 24-hour operation.',
-        lab_eyebrow: 'Product Engineering Division',
-        lab_title: 'AutoRep R&D Synthesizer',
-        lab_desc: 'Enter any piece of gym gear. Our system engineers a technical datasheet and publishes it to the shared archive.',
-        lab_label: 'Base Equipment',
-        lab_placeholder: 'e.g. Kettlebell, Rowing Machine, Jump Rope...',
-        lab_submit: 'Generate Prototype',
-        lab_wait: 'Wait {s}s',
-        lab_hint: 'Every generated datasheet is saved live and visible to everyone in the class.',
-        lab_step_design: 'Generating technical datasheet...',
-        generic_err: 'Could not generate prototype. Please check your terminal & API keys.',
-        datasheet_empty: 'Your generated datasheet will appear here.',
-        protocol_heading: 'Autonomous Workout Protocol',
-        specs_heading: 'Specifications',
-        safety_prefix: 'Safety notice: ',
-        inspect_cta: 'Open datasheet →',
-        archive_eyebrow: 'Shared Registry',
-        archive_title: 'R&D Archive',
-        archive_refresh: 'Refresh',
-        archive_empty: 'No prototypes in the archive yet. Create the first machine above.',
-        modal_label: 'Technical Datasheet',
-        modal_close: 'Close ✕',
-        footer_note: 'Human entry onto the gym floor during active cycles is strictly prohibited.'
-      }
-    };
+    const ARCHIVE_STORAGE_KEY = 'autorep_local_archive';
 
     const FLAGSHIP_PRODUCTS = [
       {
         code: 'ARP-01',
         image: 'images/solocycle.jpg',
-        de: {
-          name: 'SoloCycle Pro',
-          price: '4.800 €',
-          desc: 'Sattelloses Indoor-Bike mit Direktantrieb, das eigenständig 45-minütige Bergetappen im leeren Raum absolviert.',
-          specs: ['110 U/min Dauertrittfrequenz', 'Bürstenloser 2,4-kW-Nabenmotor', 'Sattelloses Monocoque-Chassis']
-        },
-        en: {
-          name: 'SoloCycle Pro',
-          price: '€4,800',
-          desc: 'Saddle-free direct-drive indoor cycle that completes 45-minute Alpine sprint intervals entirely on its own.',
-          specs: ['110 RPM autonomous cadence', '2.4 kW brushless hub motor', 'Seatless monocoque frame']
-        }
+        name: 'SoloCycle Pro',
+        price: '4.800 €',
+        desc: 'Sattelloses Indoor-Bike mit Direktantrieb, das eigenständig 45-minütige Bergetappen im leeren Raum absolviert.',
+        specs: ['110 U/min Dauertrittfrequenz', 'Bürstenloser 2,4-kW-Nabenmotor', 'Sattelloses Monocoque-Chassis']
       },
       {
         code: 'ARP-02',
         image: 'images/flexmat.jpg',
-        de: {
-          name: 'FlexMat Carbon',
-          price: '2.290 €',
-          desc: 'Segmentierte Trainingsmatte mit internen Drehgelenken, die selbstständig saubere Sätze Liegestütze und Sit-ups ausführt.',
-          specs: ['60 Liegestütze pro Minute', '3-Achsen-Torsionsscharniere', 'Rutschfeste Elastomer-Unterseite']
-        },
-        en: {
-          name: 'FlexMat Carbon',
-          price: '€2,290',
-          desc: 'Segmented exercise mat with internal torque hinges that folds up off the floor to perform crisp pushups and sit-ups.',
-          specs: ['60 pushups per minute', '3-axis servo hinge spine', 'High-grip elastomer base']
-        }
+        name: 'FlexMat Carbon',
+        price: '2.290 €',
+        desc: 'Segmentierte Trainingsmatte mit internen Drehgelenken, die selbstständig saubere Sätze Liegestütze und Sit-ups ausführt.',
+        specs: ['60 Liegestütze pro Minute', '3-Achsen-Torsionsscharniere', 'Rutschfeste Elastomer-Unterseite']
       },
       {
         code: 'ARP-03',
         image: 'images/ghostrack.jpg',
-        de: {
-          name: 'GhostRack 5000',
-          price: '8.900 €',
-          desc: 'Hydraulisches Squat-Rack, das eine 140-kg-Langhantel in kontrolliertem Tempo hebt, absenkt und nach jedem Satz ablegt.',
-          specs: ['140 kg kalibrierte Arbeitslast', 'Lineare Doppel-Hydraulikzylinder', 'Automatische Pausen-Timer']
-        },
-        en: {
-          name: 'GhostRack 5000',
-          price: '€8,900',
-          desc: 'Hydraulic power cage that un-racks, squats, and re-racks a loaded 140 kg barbell with textbook tempo.',
-          specs: ['140 kg calibrated load', 'Dual linear hydraulic actuators', 'Automated rest-interval timer']
-        }
+        name: 'GhostRack 5000',
+        price: '8.900 €',
+        desc: 'Hydraulisches Squat-Rack, das eine 140-kg-Langhantel in kontrolliertem Tempo hebt, absenkt und nach jedem Satz ablegt.',
+        specs: ['140 kg kalibrierte Arbeitslast', 'Lineare Doppel-Hydraulikzylinder', 'Automatische Pausen-Timer']
       }
     ];
 
-    let currentLang = localStorage.getItem('autorep_lang') === 'en' ? 'en' : 'de';
-    let archiveItems = [];
-    let currentFeatured = null;
-    let currentModalProto = null;
+    function loadStoredArchive() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(ARCHIVE_STORAGE_KEY) || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveStoredArchive(items) {
+      try {
+        localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(items.slice(0, 36)));
+      } catch (_) {}
+    }
+
+    let archiveItems = loadStoredArchive();
     let cooldownRemaining = 0;
     let cooldownTimer = null;
+    let isStreaming = false;
 
     const synthesizerForm = document.getElementById('synthesizerForm');
     const itemInput = document.getElementById('itemInput');
@@ -932,10 +847,9 @@
     const synthLoadingOverlay = document.getElementById('synthLoadingOverlay');
     const featuredDatasheet = document.getElementById('featuredDatasheet');
     const archiveContainer = document.getElementById('archiveContainer');
+    const clearArchiveBtn = document.getElementById('clearArchiveBtn');
     const inspectModal = document.getElementById('inspectModal');
     const modalBodyContent = document.getElementById('modalBodyContent');
-
-    const t = (key) => I18N[currentLang]?.[key] || key;
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -946,100 +860,115 @@
         .replace(/'/g, '&#39;');
     }
 
-    function localizePrototype(rawProto) {
-      const i18nBlock = rawProto.specs?.i18n?.[currentLang] || rawProto.specs?.i18n?.de || {};
-      const fallbackSpecs = Array.isArray(rawProto.specs)
+    function normalizePrototype(rawProto) {
+      const legacyDe = rawProto?.specs?.i18n?.de || {};
+      const specsList = Array.isArray(rawProto?.specs)
         ? rawProto.specs
-        : (rawProto.specs?.list || []);
+        : Array.isArray(legacyDe.specs)
+          ? legacyDe.specs
+          : Array.isArray(rawProto?.specs?.list)
+            ? rawProto.specs.list
+            : [];
 
       return {
-        model_code: rawProto.model_code || 'ARP-04',
-        product_name: i18nBlock.product_name || rawProto.product_name || 'AutoRep Unit',
-        base_item: i18nBlock.base_item || rawProto.base_item || '',
-        msrp: i18nBlock.msrp || rawProto.msrp || '3.490 €',
-        tagline: i18nBlock.tagline || rawProto.tagline || '',
-        autonomous_routine: i18nBlock.autonomous_routine || rawProto.autonomous_routine || '',
-        specs: Array.isArray(i18nBlock.specs) ? i18nBlock.specs : fallbackSpecs,
-        osha_warning: i18nBlock.osha_warning || rawProto.osha_warning || ''
+        id: rawProto?.id || '',
+        model_code: rawProto?.model_code || '',
+        product_name: rawProto?.product_name || legacyDe.product_name || '',
+        base_item: rawProto?.base_item || legacyDe.base_item || '',
+        msrp: rawProto?.msrp || legacyDe.msrp || '',
+        tagline: rawProto?.tagline || legacyDe.tagline || '',
+        autonomous_routine: rawProto?.autonomous_routine || legacyDe.autonomous_routine || '',
+        specs: specsList,
+        osha_warning: rawProto?.osha_warning || legacyDe.osha_warning || ''
       };
     }
 
     function renderFlagships() {
-      document.getElementById('flagshipGrid').innerHTML = FLAGSHIP_PRODUCTS.map((item) => {
-        const copy = item[currentLang];
-        return `
-          <article class="product-card">
-            <div class="media-frame">
-              <img src="${escapeHtml(item.image)}" alt="${escapeHtml(copy.name)}" onerror="this.style.display='none';" />
-              <div class="media-fallback">${escapeHtml(item.image)}</div>
+      document.getElementById('flagshipGrid').innerHTML = FLAGSHIP_PRODUCTS.map((item) => `
+        <article class="product-card">
+          <div class="media-frame">
+            <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.style.display='none';" />
+            <div class="media-fallback">${escapeHtml(item.image)}</div>
+          </div>
+          <div class="product-body">
+            <div class="product-meta">
+              <span>${escapeHtml(item.code)}</span>
+              <span>${escapeHtml(item.price)}</span>
             </div>
-            <div class="product-body">
-              <div class="product-meta">
-                <span>${escapeHtml(item.code)}</span>
-                <span>${escapeHtml(copy.price)}</span>
-              </div>
-              <h3 class="product-name">${escapeHtml(copy.name)}</h3>
-              <p class="product-desc">${escapeHtml(copy.desc)}</p>
-              <ul class="spec-list">
-                ${copy.specs.map((s) => `<li>— ${escapeHtml(s)}</li>`).join('')}
-              </ul>
-            </div>
-          </article>
-        `;
-      }).join('');
+            <h3 class="product-name">${escapeHtml(item.name)}</h3>
+            <p class="product-desc">${escapeHtml(item.desc)}</p>
+            <ul class="spec-list">
+              ${item.specs.map((s) => `<li>— ${escapeHtml(s)}</li>`).join('')}
+            </ul>
+          </div>
+        </article>
+      `).join('');
     }
 
-    function buildProductDetailMarkup(rawProto) {
-      const p = localizePrototype(rawProto);
+    function formatField(value, placeholder = '—') {
+      return value
+        ? escapeHtml(value)
+        : `<span class="placeholder-muted">${placeholder}</span>`;
+    }
+
+    function buildProductDetailMarkup(rawProto, streaming = false) {
+      const p = normalizePrototype(rawProto);
+      const specSlots = [0, 1, 2].map((idx) => p.specs[idx] || '');
+
       return `
         <div class="spec-strip">
           <div class="spec-strip-left">
-            <span class="detail-code">${escapeHtml(p.model_code)}</span>
+            <span class="detail-code">${formatField(p.model_code, 'ARP-··')}</span>
             ${p.base_item ? `<span class="detail-base">/ ${escapeHtml(p.base_item)}</span>` : ''}
           </div>
-          <span class="detail-price">${escapeHtml(p.msrp)}</span>
+          <div class="spec-strip-right">
+            ${streaming ? '<span class="live-badge"><span class="live-dot"></span>Live-Synthese</span>' : ''}
+            <span class="detail-price">${formatField(p.msrp, '— €')}</span>
+          </div>
         </div>
         <div class="detail-body">
-          <h3 class="detail-title">${escapeHtml(p.product_name)}</h3>
-          <p class="detail-tagline">${escapeHtml(p.tagline)}</p>
+          <h3 class="detail-title">${formatField(p.product_name, 'Modellbezeichnung wird berechnet ...')}</h3>
+          <p class="detail-tagline">${formatField(p.tagline, '...')}</p>
 
-          <p class="detail-section-label">${escapeHtml(t('protocol_heading'))}</p>
-          <p class="detail-behavior">${escapeHtml(p.autonomous_routine)}</p>
+          <p class="detail-section-label">Autonomes Trainingsprotokoll</p>
+          <p class="detail-behavior">${formatField(p.autonomous_routine, '...')}</p>
 
-          <p class="detail-section-label">${escapeHtml(t('specs_heading'))}</p>
+          <p class="detail-section-label">Spezifikationen</p>
           <ul class="numbered-specs">
-            ${p.specs.map((s, idx) => `
+            ${specSlots.map((s, idx) => `
               <li>
                 <span class="spec-idx">0${idx + 1}</span>
-                <span>${escapeHtml(s)}</span>
+                <span>${formatField(s, '—')}</span>
               </li>
             `).join('')}
           </ul>
 
-          ${p.osha_warning ? `<p class="detail-safety">${escapeHtml(t('safety_prefix'))}${escapeHtml(p.osha_warning)}</p>` : ''}
+          <p class="detail-safety">Sicherheitshinweis: ${formatField(p.osha_warning, '—')}</p>
         </div>
       `;
     }
 
-    function renderFeaturedDatasheet(rawProto) {
-      currentFeatured = rawProto;
+    function renderFeaturedDatasheet(rawProto, streaming = false) {
       featuredDatasheet.innerHTML = rawProto
-        ? buildProductDetailMarkup(rawProto)
-        : `<div class="datasheet-empty">${escapeHtml(t('datasheet_empty'))}</div>`;
+        ? buildProductDetailMarkup(rawProto, streaming)
+        : '<div class="datasheet-empty">Ihr generiertes Datenblatt erscheint hier.</div>';
     }
 
     function renderArchiveGrid() {
+      clearArchiveBtn.classList.toggle('hidden', archiveItems.length === 0);
+
       if (!archiveItems.length) {
-        archiveContainer.innerHTML = `<div class="archive-empty">${escapeHtml(t('archive_empty'))}</div>`;
+        archiveContainer.innerHTML =
+          '<div class="archive-empty">Noch keine Prototypen im Archiv. Entwickeln Sie oben den ersten Entwurf.</div>';
         return;
       }
 
       archiveContainer.innerHTML = `
         <div class="archive-grid">
           ${archiveItems.map((raw) => {
-            const p = localizePrototype(raw);
+            const p = normalizePrototype(raw);
             return `
-              <article class="archive-card" data-proto-id="${escapeHtml(raw.id)}">
+              <article class="archive-card" data-proto-id="${escapeHtml(p.id)}">
                 <div class="archive-card-head">
                   <span class="detail-code">${escapeHtml(p.model_code)}</span>
                   <span>${escapeHtml(p.msrp)}</span>
@@ -1048,7 +977,7 @@
                   ${p.base_item ? `<span class="archive-card-base">${escapeHtml(p.base_item)}</span>` : ''}
                   <h3 class="product-name">${escapeHtml(p.product_name)}</h3>
                   <p class="product-desc" style="margin-bottom: 0;">${escapeHtml(p.tagline)}</p>
-                  <div class="archive-card-footer">${escapeHtml(t('inspect_cta'))}</div>
+                  <div class="archive-card-footer">Datenblatt öffnen →</div>
                 </div>
               </article>
             `;
@@ -1060,8 +989,7 @@
         card.addEventListener('click', () => {
           const found = archiveItems.find((x) => String(x.id) === String(card.dataset.protoId));
           if (found) {
-            currentModalProto = found;
-            modalBodyContent.innerHTML = buildProductDetailMarkup(found);
+            modalBodyContent.innerHTML = buildProductDetailMarkup(found, false);
             inspectModal.classList.remove('hidden');
           }
         });
@@ -1070,103 +998,128 @@
 
     function closeInspectModal() {
       inspectModal.classList.add('hidden');
-      currentModalProto = null;
     }
 
-    function updateButtonLabel() {
+    function updateButtonState() {
+      if (isStreaming) {
+        synthesizeBtn.textContent = 'Synthese läuft ...';
+        synthesizeBtn.disabled = true;
+        return;
+      }
       synthesizeBtn.textContent = cooldownRemaining > 0
-        ? t('lab_wait').replace('{s}', cooldownRemaining)
-        : t('lab_submit');
+        ? `Bitte ${cooldownRemaining}s warten`
+        : 'Prototyp generieren';
       synthesizeBtn.disabled = cooldownRemaining > 0;
     }
 
     function startCooldown(seconds) {
       cooldownRemaining = seconds;
-      updateButtonLabel();
+      updateButtonState();
       clearInterval(cooldownTimer);
       cooldownTimer = setInterval(() => {
         cooldownRemaining = Math.max(0, cooldownRemaining - 1);
         if (cooldownRemaining === 0) clearInterval(cooldownTimer);
-        updateButtonLabel();
+        updateButtonState();
       }, 1000);
-    }
-
-    function setLanguage(lang) {
-      currentLang = lang === 'en' ? 'en' : 'de';
-      localStorage.setItem('autorep_lang', currentLang);
-      document.documentElement.lang = currentLang;
-
-      document.querySelectorAll('.lang-btn').forEach((btn) => {
-        btn.classList.toggle('active', btn.dataset.lang === currentLang);
-      });
-      document.querySelectorAll('[data-i18n]').forEach((el) => {
-        el.textContent = t(el.getAttribute('data-i18n'));
-      });
-      document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
-        el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
-      });
-
-      updateButtonLabel();
-      renderFlagships();
-      renderFeaturedDatasheet(currentFeatured);
-      renderArchiveGrid();
-
-      if (currentModalProto) {
-        modalBodyContent.innerHTML = buildProductDetailMarkup(currentModalProto);
-      }
-    }
-
-    async function loadArchive() {
-      try {
-        const res = await fetch('/api/invent');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (Array.isArray(data.prototypes)) {
-          archiveItems = data.prototypes;
-          renderArchiveGrid();
-        }
-      } catch (_) {}
     }
 
     synthesizerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const baseItem = itemInput.value.trim();
-      if (!baseItem || cooldownRemaining > 0) return;
+      if (!baseItem || cooldownRemaining > 0 || isStreaming) return;
 
       synthErrorBox.classList.add('hidden');
-      synthesizeBtn.disabled = true;
+      isStreaming = true;
+      updateButtonState();
       synthLoadingOverlay.classList.remove('hidden');
+
+      let receivedFirstChunk = false;
+      let finalPrototype = null;
 
       try {
         const res = await fetch('/api/invent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ item: baseItem, lang: currentLang })
+          body: JSON.stringify({ item: baseItem })
         });
-        const payload = await res.json().catch(() => ({}));
-        if (!res.ok || !payload.prototype) {
-          throw new Error(payload.error || `Server error (${res.status})`);
+
+        if (!res.ok) {
+          const errPayload = await res.json().catch(() => ({}));
+          throw new Error(errPayload.error || `Serverfehler (${res.status})`);
         }
 
-        const created = payload.prototype;
-        renderFeaturedDatasheet(created);
-        archiveItems = [created, ...archiveItems.filter((x) => x.id !== created.id)];
+        if (!res.body) {
+          throw new Error('Streaming wird von diesem Browser nicht unterstützt.');
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const events = buffer.split('\n\n');
+          buffer = events.pop() || '';
+
+          for (const rawEvent of events) {
+            const dataLine = rawEvent
+              .split('\n')
+              .find((line) => line.startsWith('data:'));
+            if (!dataLine) continue;
+
+            const payload = JSON.parse(dataLine.slice(5).trim());
+
+            if (payload.type === 'error') {
+              throw new Error(payload.error || 'Synthese fehlgeschlagen.');
+            }
+
+            if (payload.type === 'partial' && payload.prototype) {
+              if (!receivedFirstChunk) {
+                receivedFirstChunk = true;
+                synthLoadingOverlay.classList.add('hidden');
+              }
+              renderFeaturedDatasheet(payload.prototype, true);
+            }
+
+            if (payload.type === 'done' && payload.prototype) {
+              finalPrototype = payload.prototype;
+            }
+          }
+        }
+
+        if (!finalPrototype) {
+          throw new Error('Datenblatt wurde unvollständig übertragen.');
+        }
+
+        synthLoadingOverlay.classList.add('hidden');
+        renderFeaturedDatasheet(finalPrototype, false);
+        archiveItems = [
+          finalPrototype,
+          ...archiveItems.filter((x) => x.id !== finalPrototype.id)
+        ].slice(0, 36);
+        saveStoredArchive(archiveItems);
         renderArchiveGrid();
         itemInput.value = '';
-        startCooldown(5);
+        isStreaming = false;
+        startCooldown(3);
       } catch (err) {
-        synthErrorBox.textContent = err.message || t('generic_err');
-        synthErrorBox.classList.remove('hidden');
-        synthesizeBtn.disabled = false;
-      } finally {
         synthLoadingOverlay.classList.add('hidden');
+        synthErrorBox.textContent =
+          err.message || 'Prototyp konnte nicht generiert werden. Bitte prüfen Sie Terminal & API-Key.';
+        synthErrorBox.classList.remove('hidden');
+        isStreaming = false;
+        updateButtonState();
       }
     });
 
-    document.querySelectorAll('.lang-btn').forEach((btn) => {
-      btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+    clearArchiveBtn.addEventListener('click', () => {
+      archiveItems = [];
+      saveStoredArchive([]);
+      renderArchiveGrid();
     });
-    document.getElementById('refreshArchiveBtn').addEventListener('click', loadArchive);
     document.getElementById('closeModalBtn').addEventListener('click', closeInspectModal);
     inspectModal.addEventListener('click', (e) => {
       if (e.target === inspectModal) closeInspectModal();
@@ -1175,9 +1128,9 @@
       if (e.key === 'Escape') closeInspectModal();
     });
 
-    setLanguage(currentLang);
-    loadArchive();
-    setInterval(loadArchive, 15000);
+    renderFlagships();
+    renderArchiveGrid();
+    updateButtonState();
   </script>
 </body>
 </html>
