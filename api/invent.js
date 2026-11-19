@@ -1,8 +1,8 @@
 /**
  * AutoRep — Vercel Serverless Endpoint (/api/invent)
  *
- * Uses @google/genai Interactions API (gemini-4-hydrogen + native studio image generation)
- * and syncs prototypes with Supabase.
+ * Generates bilingual (German + English) autonomous gym datasheets with gemini-4-hydrogen
+ * and 16:9 studio product photography via @google/genai, synced to Supabase.
  */
 
 import { GoogleGenAI } from '@google/genai';
@@ -22,11 +22,10 @@ const IMAGE_MODELS = [
   'gemini-3.1-flash-lite-image'
 ].filter(Boolean);
 
-const PROTOTYPE_JSON_SCHEMA = {
+const LOCALIZED_COPY_SCHEMA = {
   type: 'object',
   properties: {
-    model_code: { type: 'string' },
-    product_name: { type: 'string' },
+    base_item: { type: 'string' },
     msrp: { type: 'string' },
     tagline: { type: 'string' },
     autonomous_routine: { type: 'string' },
@@ -34,23 +33,37 @@ const PROTOTYPE_JSON_SCHEMA = {
       type: 'array',
       items: { type: 'string' }
     },
-    osha_warning: { type: 'string' },
-    image_prompt: { type: 'string' }
+    osha_warning: { type: 'string' }
   },
   required: [
-    'model_code',
-    'product_name',
+    'base_item',
     'msrp',
     'tagline',
     'autonomous_routine',
     'specs',
-    'osha_warning',
-    'image_prompt'
+    'osha_warning'
   ]
+};
+
+const BILINGUAL_PROTOTYPE_SCHEMA = {
+  type: 'object',
+  properties: {
+    model_code: { type: 'string' },
+    product_name: { type: 'string' },
+    image_prompt: { type: 'string' },
+    de: LOCALIZED_COPY_SCHEMA,
+    en: LOCALIZED_COPY_SCHEMA
+  },
+  required: ['model_code', 'product_name', 'image_prompt', 'de', 'en']
 };
 
 const recentIpTimestamps = new Map();
 const IP_COOLDOWN_MS = 6000;
+
+function cleanEnv(value) {
+  if (!value) return '';
+  return String(value).trim().replace(/^["']|["']$/g, '').trim();
+}
 
 function getClientIp(req) {
   const forwarded = req.headers['x-forwarded-for'];
@@ -75,10 +88,11 @@ function parseJsonBody(req) {
 
 function getSupabaseHeaders(secretKey, extraHeaders) {
   const baseHeaders = {
-    apikey: secretKey
+    apikey: secretKey,
+    'User-Agent': 'AutoRep-Server/1.0'
   };
 
-  // New Supabase secret keys (sb_secret_...) must ONLY be sent on `apikey`.
+  // Supabase sb_secret_ keys must ONLY be sent on `apikey`.
   // Legacy JWT service_role keys (eyJ...) also include `Authorization: Bearer`.
   if (!String(secretKey).startsWith('sb_')) {
     baseHeaders.Authorization = `Bearer ${secretKey}`;
@@ -87,73 +101,69 @@ function getSupabaseHeaders(secretKey, extraHeaders) {
   return Object.assign(baseHeaders, extraHeaders || {});
 }
 
+function extractJsonObject(rawText) {
+  const trimmed = String(rawText || '').trim();
+  const withoutFences = trimmed
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+  return JSON.parse(withoutFences);
+}
+
 /**
- * Generates the deadpan autonomous gym datasheet JSON via ai.interactions.create.
+ * Generates BOTH German ("de") and English ("en") datasheets in a single call
+ * using ai.interactions.create with gemini-4-hydrogen.
  */
-async function generatePrototypeSpec(ai, baseItem, lang) {
-  const isGerman = lang !== 'en';
-
-  const languageRules = isGerman
-    ? [
-        'LANGUAGE: Write "tagline", "autonomous_routine", "specs", and "osha_warning" in crisp, dry, idiomatic GERMAN (sachlicher Braun-Industriekatalog-Stil).',
-        'Format "msrp" in Euros like "1.850 €" or "4.200 €".',
-        'IMPORTANT: Keep "image_prompt" strictly in ENGLISH for the studio photo generator.'
-      ].join(' ')
-    : [
-        'LANGUAGE: Write "tagline", "autonomous_routine", "specs", and "osha_warning" in crisp, dry ENGLISH (Braun industrial catalog style).',
-        'Format "msrp" in USD like "$1,850" or "$4,200".',
-        'Keep "image_prompt" in ENGLISH.'
-      ].join(' ');
-
+async function generateBilingualPrototypeSpec(ai, baseItem) {
   const systemInstruction = [
     'You are an industrial hardware designer at AutoRep, a deadpan minimalist European brand (inspired by Braun and Teenage Engineering) that builds gym equipment engineered to work out BY ITSELF with zero humans involved.',
     'Take the object provided by the user and redesign it into an over-engineered, self-exercising autonomous machine.',
-    languageRules,
+    'You MUST provide complete copy in BOTH German ("de") and English ("en") so visitors can switch languages seamlessly:',
+    '- In "de": write crisp, dry, idiomatic German (sachlicher Braun-Industriekatalog-Stil). Translate "base_item" naturally into German and format "msrp" in Euros (e.g. "1.850 €").',
+    '- In "en": write crisp, dry English (Braun industrial catalog style). Translate "base_item" naturally into English and format "msrp" in USD (e.g. "$1,950").',
     'Strict rules:',
-    '1. Keep every word strictly school-safe and appropriate for a high-school classroom presentation. If the user input is inappropriate, offensive, or unsafe, silently ignore it and redesign a harmless "Foam Yoga Block" instead.',
-    '2. Never use emojis, exclamation marks, or cheesy sci-fi buzzwords. Write like a dry, serious industrial catalog.',
-    '3. "model_code" should follow the format ARP-XX (two digits, 04 to 99).',
-    '4. "specs" must contain exactly 3 concise mechanical specifications.',
-    '5. "osha_warning" must be a dry safety note warning humans not to interfere with the machine while it trains.',
-    '6. "image_prompt" (always in ENGLISH) must describe ONLY the physical machine actively exercising by itself (bead-blasted matte silver aluminum, matte black carbon fiber, subtle safety-orange #FF4F00 motorized joints or pistons in motion, no seats or handlebars for humans, zero people present, no text or labels).'
+    '1. Keep every word strictly school-safe and appropriate for a high-school classroom presentation. If the user input is inappropriate, offensive, or unsafe, silently ignore it and redesign a harmless "Yoga Block" instead.',
+    '2. Never use emojis, exclamation marks, or cheesy sci-fi buzzwords.',
+    '3. "model_code" must follow ARP-XX (two digits, 04 to 99). "product_name" should be a sleek international hardware name (like SoloCycle Pro or FlexMat Carbon).',
+    '4. Each "specs" array in "de" and "en" must contain exactly 3 concise mechanical specifications.',
+    '5. "osha_warning" in "de" and "en" must be a dry safety note warning humans not to disturb the machine while it works out.',
+    '6. "image_prompt" (strictly in ENGLISH) must describe ONLY the physical machine actively exercising by itself (bead-blasted matte silver aluminum, matte black carbon fiber, small safety-orange #FF4F00 motorized hinges or pistons in motion, no seats or handlebars for humans, zero people present, no text or labels).'
   ].join('\n');
 
-  let lastErrorMessage = 'Failed to generate prototype specification.';
+  let lastErrorMessage = 'Unknown Gemini error';
 
   for (const modelName of TEXT_MODELS) {
     try {
       const interaction = await ai.interactions.create({
         model: modelName,
         system_instruction: systemInstruction,
-        input: `Redesign this item into an autonomous self-exercising machine: "${baseItem}"`,
-        store: false,
+        input: `Redesign this item into an autonomous self-exercising machine (return both German and English fields): "${baseItem}"`,
         response_format: {
           type: 'text',
           mime_type: 'application/json',
-          schema: PROTOTYPE_JSON_SCHEMA
+          schema: BILINGUAL_PROTOTYPE_SCHEMA
         }
       });
 
-      if (!interaction.output_text) {
-        throw new Error('Gemini returned an empty specification.');
+      if (interaction && interaction.output_text) {
+        return extractJsonObject(interaction.output_text);
       }
-
-      return JSON.parse(interaction.output_text);
     } catch (err) {
       lastErrorMessage = err?.message || String(err);
+      console.error(`[AutoRep] Text model ${modelName} error:`, lastErrorMessage);
     }
   }
 
-  throw new Error(`Gemini spec generation error: ${lastErrorMessage.slice(0, 160)}`);
+  throw new Error(`Gemini error: ${lastErrorMessage.slice(0, 180)}`);
 }
 
 /**
- * Generates the matching #EAE8E3 studio photograph via ai.interactions.create.
+ * Generates a widescreen 16:9 studio photograph on #EAE8E3 cyclorama background.
  */
 async function generateStudioImage(ai, imageDescription) {
   const fullStudioPrompt = [
-    `Commercial industrial design studio photograph of ${imageDescription}.`,
-    'Constructed from bead-blasted matte silver anodized aluminum and matte black carbon fiber with small safety-orange (#FF4F00) motorized mechanical hinges or linear actuators mid-workout.',
+    `Wide commercial industrial design studio photograph of ${imageDescription}, centered cleanly in frame with generous studio margin.`,
+    'Constructed from bead-blasted matte silver anodized aluminum and matte black carbon fiber with subtle safety-orange (#FF4F00) motorized mechanical hinges or linear actuators mid-workout.',
     'Built to exercise entirely on its own with zero humans in frame.',
     'Shot on a clean seamless warm light-stone grey studio cyclorama background (#EAE8E3), soft diffused overhead softbox lighting, crisp floor contact shadow, Hasselblad 85mm medium format product photography, Braun and Teenage Engineering industrial hardware aesthetic, photorealistic, no text, no watermarks.'
   ].join(' ');
@@ -163,20 +173,37 @@ async function generateStudioImage(ai, imageDescription) {
       const interaction = await ai.interactions.create({
         model: modelName,
         input: fullStudioPrompt,
-        store: false
+        response_format: {
+          type: 'image',
+          mime_type: 'image/jpeg',
+          aspect_ratio: '16:9'
+        }
       });
 
-      const generatedImage = interaction.output_image;
-      if (generatedImage && generatedImage.data) {
-        const mimeType = generatedImage.mime_type || generatedImage.mimeType || 'image/png';
+      let imgBlock = interaction?.output_image;
+
+      if ((!imgBlock || !imgBlock.data) && Array.isArray(interaction?.steps)) {
+        for (const step of interaction.steps) {
+          if (step.type === 'model_output' && Array.isArray(step.content)) {
+            const found = step.content.find((part) => part.type === 'image' && part.data);
+            if (found) {
+              imgBlock = found;
+              break;
+            }
+          }
+        }
+      }
+
+      if (imgBlock && imgBlock.data) {
+        const mimeType = imgBlock.mime_type || imgBlock.mimeType || 'image/jpeg';
         return {
-          buffer: Buffer.from(generatedImage.data, 'base64'),
+          buffer: Buffer.from(imgBlock.data, 'base64'),
           mimeType,
-          base64: generatedImage.data
+          base64: imgBlock.data
         };
       }
-    } catch (_) {
-      // Try next image model in fallback list
+    } catch (err) {
+      console.error(`[AutoRep] Image model ${modelName} error:`, err?.message || err);
     }
   }
 
@@ -185,7 +212,7 @@ async function generateStudioImage(ai, imageDescription) {
 
 async function uploadImageToSupabase(imageObj, modelCode, supabaseUrl, supabaseKey) {
   const cleanBaseUrl = supabaseUrl.replace(/\/+$/, '');
-  const extension = imageObj.mimeType.includes('jpeg') || imageObj.mimeType.includes('jpg') ? 'jpg' : 'png';
+  const extension = imageObj.mimeType.includes('png') ? 'png' : 'jpg';
   const safeCode = String(modelCode || 'arp').toLowerCase().replace(/[^a-z0-9-]/g, '');
   const randomSuffix = Math.random().toString(36).slice(2, 8);
   const filePath = `${Date.now()}-${safeCode}-${randomSuffix}.${extension}`;
@@ -225,7 +252,8 @@ async function uploadImageToSupabase(imageObj, modelCode, supabaseUrl, supabaseK
   }
 
   if (!uploadRes.ok) {
-    throw new Error(`Supabase Storage upload failed (${uploadRes.status}).`);
+    const errText = await uploadRes.text().catch(() => '');
+    throw new Error(`Supabase Storage upload failed (${uploadRes.status}): ${errText.slice(0, 100)}`);
   }
 
   return `${cleanBaseUrl}/storage/v1/object/public/${STORAGE_BUCKET}/${filePath}`;
@@ -244,7 +272,7 @@ async function fetchArchiveFromSupabase(supabaseUrl, supabaseKey) {
 
   if (!response.ok) {
     const detail = await response.text().catch(() => '');
-    throw new Error(`Supabase fetch failed (${response.status}): ${detail.slice(0, 120)}`);
+    throw new Error(`Supabase fetch failed (${response.status}): ${detail.slice(0, 140)}`);
   }
 
   return response.json();
@@ -265,7 +293,7 @@ async function insertPrototypeIntoSupabase(record, supabaseUrl, supabaseKey) {
 
   if (!response.ok) {
     const detail = await response.text().catch(() => '');
-    throw new Error(`Supabase insert failed (${response.status}): ${detail.slice(0, 120)}`);
+    throw new Error(`Supabase insert failed (${response.status}): ${detail.slice(0, 140)}`);
   }
 
   const rows = await response.json();
@@ -281,10 +309,11 @@ export default async function handler(req, res) {
     return res.status(204).end();
   }
 
-  const geminiApiKey = process.env.GEMINI_API_KEY;
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseServiceKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+  const geminiApiKey = cleanEnv(process.env.GEMINI_API_KEY);
+  const supabaseUrl = cleanEnv(process.env.SUPABASE_URL);
+  const supabaseServiceKey = cleanEnv(
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY
+  );
   const hasSupabase = Boolean(supabaseUrl && supabaseServiceKey);
 
   if (req.method === 'GET') {
@@ -296,22 +325,26 @@ export default async function handler(req, res) {
       const prototypes = await fetchArchiveFromSupabase(supabaseUrl, supabaseServiceKey);
       return res.status(200).json({ prototypes });
     } catch (err) {
-      return res.status(500).json({
-        error: err.message || 'Could not load archive from Supabase.'
+      console.error('[AutoRep GET /api/invent]', err?.message || err);
+      // Return empty list gracefully so page load does not throw 500 if SQL table isn't created yet
+      return res.status(200).json({
+        prototypes: [],
+        warning: err?.message || 'Supabase archive unavailable'
       });
     }
   }
 
   if (req.method === 'POST') {
+    const body = parseJsonBody(req);
+    const isGerman = body.lang !== 'en';
+
     if (!geminiApiKey) {
       return res.status(500).json({
-        error: 'Missing GEMINI_API_KEY in Vercel Environment Variables.'
+        error: isGerman
+          ? 'GEMINI_API_KEY fehlt in der .env Datei bzw. in Vercel.'
+          : 'Missing GEMINI_API_KEY in .env or Vercel Environment Variables.'
       });
     }
-
-    const body = parseJsonBody(req);
-    const lang = body.lang === 'en' ? 'en' : 'de';
-    const isGerman = lang === 'de';
 
     const clientIp = getClientIp(req);
     const now = Date.now();
@@ -331,7 +364,6 @@ export default async function handler(req, res) {
     }
 
     const baseItem = String(body.item || '').trim().slice(0, 60);
-
     if (!baseItem) {
       return res.status(400).json({
         error: isGerman
@@ -341,13 +373,31 @@ export default async function handler(req, res) {
     }
 
     try {
-      const ai = new GoogleGenAI({});
+      const ai = new GoogleGenAI({ apiKey: geminiApiKey });
 
-      const spec = await generatePrototypeSpec(ai, baseItem, lang);
+      const spec = await generateBilingualPrototypeSpec(ai, baseItem);
+
+      const deCopy = {
+        base_item: spec?.de?.base_item || baseItem,
+        msrp: spec?.de?.msrp || '1.490 €',
+        tagline: spec?.de?.tagline || '',
+        autonomous_routine: spec?.de?.autonomous_routine || '',
+        specs: Array.isArray(spec?.de?.specs) ? spec.de.specs.slice(0, 3) : [],
+        osha_warning: spec?.de?.osha_warning || 'Abstand zu beweglichen Mechaniken halten.'
+      };
+
+      const enCopy = {
+        base_item: spec?.en?.base_item || baseItem,
+        msrp: spec?.en?.msrp || '$1,590',
+        tagline: spec?.en?.tagline || '',
+        autonomous_routine: spec?.en?.autonomous_routine || '',
+        specs: Array.isArray(spec?.en?.specs) ? spec.en.specs.slice(0, 3) : [],
+        osha_warning: spec?.en?.osha_warning || 'Keep clear of moving mechanisms.'
+      };
 
       const imageObj = await generateStudioImage(
         ai,
-        spec.image_prompt || `${spec.product_name}, an autonomous self-exercising ${baseItem}`
+        spec.image_prompt || `${spec.product_name}, an autonomous self-exercising ${enCopy.base_item}`
       );
 
       let finalImageUrl = '';
@@ -360,7 +410,8 @@ export default async function handler(req, res) {
               supabaseUrl,
               supabaseServiceKey
             );
-          } catch (_) {
+          } catch (uploadErr) {
+            console.error('[AutoRep Storage Upload]', uploadErr?.message || uploadErr);
             finalImageUrl = `data:${imageObj.mimeType};base64,${imageObj.base64}`;
           }
         } else {
@@ -368,27 +419,35 @@ export default async function handler(req, res) {
         }
       }
 
+      // Stores German in top-level columns + full DE/EN dictionary inside `specs` jsonb column
       const recordToSave = {
         model_code: spec.model_code || 'ARP-04',
         product_name: spec.product_name || 'AutoUnit',
-        base_item: baseItem,
-        msrp: spec.msrp || (isGerman ? '1.490 €' : '$1,490'),
-        tagline: spec.tagline || '',
-        autonomous_routine: spec.autonomous_routine || '',
-        specs: Array.isArray(spec.specs) ? spec.specs.slice(0, 3) : [],
-        osha_warning:
-          spec.osha_warning ||
-          (isGerman ? 'Abstand zu beweglichen Mechaniken halten.' : 'Keep clear of moving mechanisms.'),
+        base_item: deCopy.base_item,
+        msrp: deCopy.msrp,
+        tagline: deCopy.tagline,
+        autonomous_routine: deCopy.autonomous_routine,
+        specs: {
+          i18n: {
+            de: deCopy,
+            en: enCopy
+          }
+        },
+        osha_warning: deCopy.osha_warning,
         image_url: finalImageUrl
       };
 
       if (hasSupabase) {
-        const savedRow = await insertPrototypeIntoSupabase(
-          recordToSave,
-          supabaseUrl,
-          supabaseServiceKey
-        );
-        return res.status(200).json({ prototype: savedRow });
+        try {
+          const savedRow = await insertPrototypeIntoSupabase(
+            recordToSave,
+            supabaseUrl,
+            supabaseServiceKey
+          );
+          return res.status(200).json({ prototype: savedRow });
+        } catch (dbErr) {
+          console.error('[AutoRep DB Insert]', dbErr?.message || dbErr);
+        }
       }
 
       return res.status(200).json({
@@ -401,8 +460,9 @@ export default async function handler(req, res) {
         )
       });
     } catch (err) {
+      console.error('[AutoRep POST /api/invent]', err);
       return res.status(500).json({
-        error: err.message || (isGerman ? 'Prototyp konnte nicht erstellt werden.' : 'Failed to generate prototype.')
+        error: err?.message || (isGerman ? 'Prototyp konnte nicht erstellt werden.' : 'Failed to generate prototype.')
       });
     }
   }
