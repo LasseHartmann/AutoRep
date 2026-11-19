@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoRep — Autonome Fitness-Hardware</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#F5F4F0',
+            surface: '#FFFFFF',
+            studio: '#EAE8E3',
+            ink: '#161615',
+            muted: '#6E6C66',
+            line: '#DDDAD2',
+            accent: '#FF4F00',
+            accentHover: '#E04500'
+          },
+          fontFamily: {
+            sans: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #F5F4F0;
+      color: #161615;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+      background-color: #FF4F00;
+      color: #FFFFFF;
+    }
+
+    @keyframes progressSlide {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(250%); }
+    }
+
+    .loading-bar {
+      animation: progressSlide 1.6s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Minimal Header -->
+  <header class="sticky top-0 z-40 bg-canvas/95 backdrop-blur-sm border-b border-line">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+      <a href="#" class="font-semibold text-lg tracking-tight">AutoRep</a>
+
+      <nav class="hidden sm:flex items-center gap-8 text-sm text-muted">
+        <a href="#products" data-i18n="nav_machines" class="hover:text-ink transition-colors">Geräte</a>
+        <a href="#custom" data-i18n="nav_lab" class="hover:text-ink transition-colors">Labor</a>
+        <a href="#archive" data-i18n="nav_archive" class="hover:text-ink transition-colors">Archiv</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <!-- Language Switcher -->
+        <div class="inline-flex items-center border border-line bg-surface font-mono text-xs" role="group" aria-label="Language switcher">
+          <button
+            id="langDeBtn"
+            type="button"
+            class="px-2.5 py-1.5 transition-colors bg-ink text-surface font-medium"
+          >
+            DE
+          </button>
+          <button
+            id="langEnBtn"
+            type="button"
+            class="px-2.5 py-1.5 transition-colors text-muted hover:text-ink"
+          >
+            EN
+          </button>
+        </div>
+
+        <a href="#custom" data-i18n="nav_cta" class="text-sm font-medium bg-ink text-surface px-4 py-2 hover:bg-accent transition-colors">
+          Prototyp bauen
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6">
+
+    <!-- Clean Editorial Hero -->
+    <section class="py-20 sm:py-24 border-b border-line">
+      <div class="max-w-3xl">
+        <p data-i18n="hero_kicker" class="font-mono text-xs uppercase tracking-widest text-muted mb-5">
+          Autonome Trainingsgeräte
+        </p>
+        <h1 data-i18n="hero_title" class="text-4xl sm:text-6xl font-medium tracking-tight leading-[1.04]">
+          Fitnessgeräte, die trainieren, damit Sie es nicht müssen.
+        </h1>
+        <p data-i18n="hero_subtitle" class="mt-6 text-lg sm:text-xl text-muted leading-relaxed max-w-2xl">
+          Klassische Heimtrainer verbringen 98 % ihrer Lebensdauer als Kleiderständer. AutoRep-Maschinen streichen menschliche Disziplin aus der Gleichung – motorisierte Räder, Matten und Racks, gebaut für unermüdliches Training im leeren Raum.
+        </p>
+        <div class="mt-9 flex flex-wrap gap-4">
+          <a href="#products" data-i18n="hero_btn_primary" class="bg-accent hover:bg-accentHover text-surface text-sm font-medium px-6 py-3 transition-colors">
+            Kollektion ansehen
+          </a>
+          <a href="#custom" data-i18n="hero_btn_secondary" class="border border-line bg-surface hover:border-ink text-sm font-medium px-6 py-3 transition-colors">
+            Maschine entwerfen
+          </a>
+        </div>
+      </div>
+
+      <!-- Wide Facility Hero Photo -->
+      <div class="mt-14 aspect-[16/9] bg-studio relative overflow-hidden flex items-center justify-center">
+        <img
+          src="images/hero.jpg"
+          alt="AutoRep facility"
+          class="w-full h-full object-cover relative z-10"
+          onerror="if(!this.dataset.altExt){this.dataset.altExt='1';this.src='images/hero.jpeg';}else{this.style.display='none';}"
+        />
+        <span class="font-mono text-xs text-muted px-6 text-center">
+          images/hero.jpg
+        </span>
+      </div>
+    </section>
+
+    <!-- Flagship Products -->
+    <section id="products" class="py-20 border-b border-line">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+        <div>
+          <h2 data-i18n="products_heading" class="text-2xl sm:text-3xl font-medium tracking-tight">Kollektion 01</h2>
+          <p data-i18n="products_sub" class="text-sm text-muted mt-1">Fertig programmiert geliefert. Einstecken und zurücktreten.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <!-- Product 1 -->
+        <article class="flex flex-col">
+          <div class="aspect-[4/3] bg-studio mb-5 relative overflow-hidden flex items-center justify-center">
+            <img
+              src="images/solocycle.jpg"
+              alt="SoloCycle Pro"
+              class="w-full h-full object-cover relative z-10"
+              onerror="if(!this.dataset.altExt){this.dataset.altExt='1';this.src='images/solocycle.jpeg';}else{this.style.display='none';}"
+            />
+            <span class="font-mono text-xs text-muted px-6 text-center">
+              images/solocycle.jpg
+            </span>
+          </div>
+
+          <div class="flex items-baseline justify-between">
+            <h3 class="text-lg font-medium">SoloCycle Pro</h3>
+            <span data-i18n="p1_price" class="font-mono text-sm text-muted">3.499 €</span>
+          </div>
+
+          <p data-i18n="p1_desc" class="mt-2 text-sm text-muted leading-relaxed">
+            Ohne Sattel und Lenker konstruiert, um menschliche Störungen auszuschließen. Ein 4,2-kW-Kurbelmotor fährt den ganzen Nachmittag Bergetappen, während eine Kamera auf dem nach innen gerichteten Display Alpenpässe betrachtet.
+          </p>
+
+          <dl class="mt-5 pt-4 border-t border-line space-y-2 font-mono text-xs">
+            <div class="flex justify-between">
+              <dt data-i18n="p1_spec1_label" class="text-muted">Trittfrequenz</dt>
+              <dd data-i18n="p1_spec1_val">140 U/min dauerhaft</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt data-i18n="p1_spec2_label" class="text-muted">Sattel</dt>
+              <dd data-i18n="p1_spec2_val">Entfällt</dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- Product 2 -->
+        <article class="flex flex-col">
+          <div class="aspect-[4/3] bg-studio mb-5 relative overflow-hidden flex items-center justify-center">
+            <img
+              src="images/flexmat.jpg"
+              alt="FlexMat Carbon"
+              class="w-full h-full object-cover relative z-10"
+              onerror="if(!this.dataset.altExt){this.dataset.altExt='1';this.src='images/flexmat.jpeg';}else{this.style.display='none';}"
+            />
+            <span class="font-mono text-xs text-muted px-6 text-center">
+              images/flexmat.jpg
+            </span>
+          </div>
+
+          <div class="flex items-baseline justify-between">
+            <h3 class="text-lg font-medium">FlexMat Carbon</h3>
+            <span data-i18n="p2_price" class="font-mono text-sm text-muted">899 €</span>
+          </div>
+
+          <p data-i18n="p2_desc" class="mt-2 text-sm text-muted leading-relaxed">
+            Segmentierte Carbonfaser-Matte mit 18 internen Hydraulikscharnieren. Absolviert eigenständig saubere Liegestütze, Sit-ups und Planks auf Ihrem Teppich – und wirft jeden sanft ab, der sich darauf dehnen möchte.
+          </p>
+
+          <dl class="mt-5 pt-4 border-t border-line space-y-2 font-mono text-xs">
+            <div class="flex justify-between">
+              <dt data-i18n="p2_spec1_label" class="text-muted">Leistung</dt>
+              <dd data-i18n="p2_spec1_val">64 Liegestütze / Min.</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt data-i18n="p2_spec2_label" class="text-muted">Antrieb</dt>
+              <dd data-i18n="p2_spec2_val">18 Gelenkservos</dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- Product 3 -->
+        <article class="flex flex-col">
+          <div class="aspect-[4/3] bg-studio mb-5 relative overflow-hidden flex items-center justify-center">
+            <img
+              src="images/ghostrack.jpg"
+              alt="GhostRack 5000"
+              class="w-full h-full object-cover relative z-10"
+              onerror="if(!this.dataset.altExt){this.dataset.altExt='1';this.src='images/ghostrack.jpeg';}else{this.style.display='none';}"
+            />
+            <span class="font-mono text-xs text-muted px-6 text-center">
+              images/ghostrack.jpg
+            </span>
+          </div>
+
+          <div class="flex items-baseline justify-between">
+            <h3 class="text-lg font-medium">GhostRack 5000</h3>
+            <span data-i18n="p3_price" class="font-mono text-sm text-muted">6.200 €</span>
+          </div>
+
+          <p data-i18n="p3_desc" class="mt-2 text-sm text-muted leading-relaxed">
+            Zwei Linearkolben bewegen Tag und Nacht 320 kg kalibrierten Stahl. Bodensensoren pausieren die Hantel sofort, falls ein Mensch nähertritt und fragt, wie viele Sätze noch übrig sind.
+          </p>
+
+          <dl class="mt-5 pt-4 border-t border-line space-y-2 font-mono text-xs">
+            <div class="flex justify-between">
+              <dt data-i18n="p3_spec1_label" class="text-muted">Arbeitslast</dt>
+              <dd data-i18n="p3_spec1_val">320 kg</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt data-i18n="p3_spec2_label" class="text-muted">Hantelbank</dt>
+              <dd data-i18n="p3_spec2_val">Inkompatibel</dd>
+            </div>
+          </dl>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- Custom R&D Lab -->
+    <section id="custom" class="py-20 border-b border-line">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+
+        <!-- Left Form -->
+        <div class="lg:col-span-5">
+          <p data-i18n="lab_kicker" class="font-mono text-xs uppercase tracking-widest text-muted mb-3">F&amp;E-Labor</p>
+          <h2 data-i18n="lab_heading" class="text-2xl sm:text-3xl font-medium tracking-tight">Jedes Trainingsgerät automatisieren</h2>
+          <p data-i18n="lab_desc" class="mt-3 text-sm text-muted leading-relaxed">
+            Geben Sie ein gewöhnliches Fitnessgerät (oder einen Alltagsgegenstand) ein. Unser Labor konstruiert daraus eine selbsttrainierende Maschine, fotografiert den Prototyp und speichert ihn im gemeinsamen Archiv.
+          </p>
+
+          <form id="synthesizerForm" class="mt-8 space-y-5">
+            <div>
+              <label for="itemInput" data-i18n="lab_input_label" class="block text-xs font-mono uppercase text-muted mb-2">
+                Gerät oder Gegenstand
+              </label>
+              <input
+                id="itemInput"
+                type="text"
+                maxlength="60"
+                required
+                placeholder="Springseil, Faszienrolle, Kurzhantel ..."
+                class="w-full bg-surface border border-line focus:border-ink px-4 py-3 text-sm focus:outline-none transition-colors"
+              />
+            </div>
+
+            <!-- Only shown when opened via file:// on a computer without a Vercel URL configured yet -->
+            <div id="localSetupBox" class="hidden border border-line bg-surface p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span data-i18n="local_title" class="font-mono text-xs uppercase text-muted">Lokale Dateiverbindung</span>
+                <button id="clearLocalConfigBtn" data-i18n="local_reset" type="button" class="hidden font-mono text-xs text-muted hover:text-ink underline">
+                  Zurücksetzen
+                </button>
+              </div>
+              <p data-i18n="local_desc" class="text-xs text-muted leading-relaxed">
+                Direkt vom Computer geöffnet. Fügen Sie Ihre Vercel-URL (für das Online-Archiv) oder einen Gemini-API-Key ein (wird nur im Browser gespeichert, niemals in GitHub).
+              </p>
+              <input
+                id="localConfigInput"
+                type="password"
+                placeholder="https://ihre-seite.vercel.app  oder  AIza..."
+                class="w-full bg-canvas border border-line focus:border-ink px-3 py-2 text-xs font-mono focus:outline-none"
+              />
+              <button
+                id="saveLocalConfigBtn"
+                data-i18n="local_save"
+                type="button"
+                class="w-full border border-ink text-ink hover:bg-ink hover:text-surface text-xs font-medium py-2 px-3 transition-colors"
+              >
+                Im Browser speichern
+              </button>
+            </div>
+
+            <div id="synthErrorBox" class="hidden border border-accent bg-surface p-3.5 text-xs text-ink">
+              <p id="synthErrorText"></p>
+            </div>
+
+            <button
+              id="synthesizeBtn"
+              type="submit"
+              class="w-full bg-ink hover:bg-accent disabled:bg-muted disabled:cursor-not-allowed text-surface text-sm font-medium py-3.5 px-6 transition-colors"
+            >
+              Prototyp generieren
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Result Card -->
+        <div class="lg:col-span-7 relative">
+          <!-- Minimal Loading State -->
+          <div id="synthLoadingOverlay" class="hidden absolute inset-0 z-20 bg-canvas/90 backdrop-blur-xs flex flex-col items-center justify-center p-8">
+            <div class="w-full max-w-xs text-center">
+              <p id="synthStepTitle" class="text-sm font-medium">Mechanik wird konstruiert ...</p>
+              <div class="mt-3 h-0.5 w-full bg-line overflow-hidden">
+                <div class="h-full w-1/2 bg-accent loading-bar"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="datasheetOutput"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Shared Class Archive -->
+    <section id="archive" class="py-20">
+      <div class="flex items-end justify-between gap-4 mb-10">
+        <div>
+          <h2 data-i18n="archive_heading" class="text-2xl sm:text-3xl font-medium tracking-tight">Prototypen-Archiv</h2>
+          <p data-i18n="archive_sub" class="text-sm text-muted mt-1">Von Besuchern in Auftrag gegebene Maschinen.</p>
+        </div>
+
+        <button
+          id="refreshArchiveBtn"
+          data-i18n="archive_refresh"
+          type="button"
+          class="text-xs font-mono uppercase tracking-wider border border-line bg-surface hover:border-ink px-3.5 py-2 transition-colors"
+        >
+          Aktualisieren
+        </button>
+      </div>
+
+      <div id="archiveEmptyState" class="border border-line bg-surface py-16 px-6 text-center">
+        <p data-i18n="archive_empty" class="text-sm text-muted">Noch keine Prototypen im Archiv. Erstellen Sie oben den ersten.</p>
+      </div>
+
+      <div id="archiveGrid" class="hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </section>
+
+  </main>
+
+  <!-- Simple Footer -->
+  <footer class="border-t border-line py-10 mt-10">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-muted">
+      <span data-i18n="footer_brand">AutoRep — Autonome Fitness-Hardware</span>
+      <div class="flex items-center gap-4">
+        <span data-i18n="footer_safety">Bitte Hände und Füße von aktiven Trainingsgeräten fernhalten.</span>
+        <button id="footerLocalSettingsBtn" data-i18n="footer_local" type="button" class="hidden font-mono underline hover:text-ink">
+          Lokale Einstellungen
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Clean Modal for Archive Items -->
+  <div id="inspectModal" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs p-4 sm:p-6 overflow-y-auto items-center justify-center">
+    <div class="bg-surface border border-line max-w-2xl w-full mx-auto overflow-hidden my-8">
+      <div class="px-6 py-4 border-b border-line flex items-center justify-between">
+        <span id="modalHeaderCode" class="font-mono text-xs text-muted uppercase"></span>
+        <button id="closeModalBtn" data-i18n="modal_close" type="button" class="text-xs font-mono uppercase text-muted hover:text-ink">
+          Schließen
+        </button>
+      </div>
+      <div id="modalBodyContent"></div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * OPTIONAL FOR LOCAL DOUBLE-CLICKING:
+     * Once you deploy to Vercel, paste your public Vercel URL below (e.g. "https://autorep.vercel.app").
+     */
+    const DEPLOYED_VERCEL_URL = '';
+
+    const TRANSLATIONS = {
+      de: {
+        page_title: 'AutoRep — Autonome Fitness-Hardware',
+        nav_machines: 'Geräte',
+        nav_lab: 'Labor',
+        nav_archive: 'Archiv',
+        nav_cta: 'Prototyp bauen',
+        hero_kicker: 'Autonome Trainingsgeräte',
+        hero_title: 'Fitnessgeräte, die trainieren, damit Sie es nicht müssen.',
+        hero_subtitle: 'Klassische Heimtrainer verbringen 98 % ihrer Lebensdauer als Kleiderständer. AutoRep-Maschinen streichen menschliche Disziplin aus der Gleichung – motorisierte Räder, Matten und Racks, gebaut für unermüdliches Training im leeren Raum.',
+        hero_btn_primary: 'Kollektion ansehen',
+        hero_btn_secondary: 'Maschine entwerfen',
+        products_heading: 'Kollektion 01',
+        products_sub: 'Fertig programmiert geliefert. Einstecken und zurücktreten.',
+        p1_price: '3.499 €',
+        p1_desc: 'Ohne Sattel und Lenker konstruiert, um menschliche Störungen auszuschließen. Ein 4,2-kW-Kurbelmotor fährt den ganzen Nachmittag Bergetappen, während eine Kamera auf dem nach innen gerichteten Display Alpenpässe betrachtet.',
+        p1_spec1_label: 'Trittfrequenz',
+        p1_spec1_val: '140 U/min dauerhaft',
+        p1_spec2_label: 'Sattel',
+        p1_spec2_val: 'Entfällt',
+        p2_price: '899 €',
+        p2_desc: 'Segmentierte Carbonfaser-Matte mit 18 internen Hydraulikscharnieren. Absolviert eigenständig saubere Liegestütze, Sit-ups und Planks auf Ihrem Teppich – und wirft jeden sanft ab, der sich darauf dehnen möchte.',
+        p2_spec1_label: 'Leistung',
+        p2_spec1_val: '64 Liegestütze / Min.',
+        p2_spec2_label: 'Antrieb',
+        p2_spec2_val: '18 Gelenkservos',
+        p3_price: '6.200 €',
+        p3_desc: 'Zwei Linearkolben bewegen Tag und Nacht 320 kg kalibrierten Stahl. Bodensensoren pausieren die Hantel sofort, falls ein Mensch nähertritt und fragt, wie viele Sätze noch übrig sind.',
+        p3_spec1_label: 'Arbeitslast',
+        p3_spec1_val: '320 kg',
+        p3_spec2_label: 'Hantelbank',
+        p3_spec2_val: 'Inkompatibel',
+        lab_kicker: 'F&E-Labor',
+        lab_heading: 'Jedes Trainingsgerät automatisieren',
+        lab_desc: 'Geben Sie ein gewöhnliches Fitnessgerät (oder einen Alltagsgegenstand) ein. Unser Labor konstruiert daraus eine selbsttrainierende Maschine, fotografiert den Prototyp und speichert ihn im gemeinsamen Archiv.',
+        lab_input_label: 'Gerät oder Gegenstand',
+        lab_input_placeholder: 'Springseil, Faszienrolle, Kurzhantel ...',
+        lab_submit: 'Prototyp generieren',
+        lab_wait: 'Bitte {s}s warten',
+        lab_step_design: 'Mechanik wird konstruiert ...',
+        lab_step_photo: 'Studiofoto wird aufgenommen ...',
+        local_title: 'Lokale Dateiverbindung',
+        local_reset: 'Zurücksetzen',
+        local_desc: 'Direkt vom Computer geöffnet. Fügen Sie Ihre Vercel-URL (für das Online-Archiv) oder einen Gemini-API-Key ein (wird nur im Browser gespeichert, niemals in GitHub).',
+        local_placeholder: 'https://ihre-seite.vercel.app  oder  AIza...',
+        local_save: 'Im Browser speichern',
+        local_missing_err: 'Bitte fügen Sie oben zuerst Ihre Vercel-URL oder einen Gemini-API-Key ein.',
+        spec_fail_err: 'Prototyp konnte nicht erstellt werden. Bitte prüfen Sie API-Key oder Vercel-URL.',
+        generic_err: 'Prototyp konnte nicht generiert werden. Bitte erneut versuchen.',
+        datasheet_empty: 'Ihr generierter Prototyp erscheint hier.',
+        datasheet_based_on: 'Basierend auf',
+        datasheet_routine: 'Autonomes Programm',
+        datasheet_specs: 'Spezifikationen',
+        datasheet_note: 'Hinweis:',
+        datasheet_render_pending: 'Studioaufnahme ausstehend',
+        archive_heading: 'Prototypen-Archiv',
+        archive_sub: 'Von Besuchern in Auftrag gegebene Maschinen.',
+        archive_refresh: 'Aktualisieren',
+        archive_empty: 'Noch keine Prototypen im Archiv. Erstellen Sie oben den ersten.',
+        footer_brand: 'AutoRep — Autonome Fitness-Hardware',
+        footer_safety: 'Bitte Hände und Füße von aktiven Trainingsgeräten fernhalten.',
+        footer_local: 'Lokale Einstellungen',
+        modal_close: 'Schließen'
+      },
+      en: {
+        page_title: 'AutoRep — Autonomous Fitness Hardware',
+        nav_machines: 'Machines',
+        nav_lab: 'Custom Lab',
+        nav_archive: 'Archive',
+        nav_cta: 'Build Prototype',
+        hero_kicker: 'Zero-Occupancy Fitness Equipment',
+        hero_title: 'Gym equipment that works out so you don’t have to.',
+        hero_subtitle: 'Most home gym gear spends 98% of its life acting as a clothes rack. AutoRep machines remove human discipline from the equation—motorized bikes, mats, and racks engineered to train relentlessly in an empty room.',
+        hero_btn_primary: 'View Collection',
+        hero_btn_secondary: 'Commission a Machine',
+        products_heading: 'Collection 01',
+        products_sub: 'Delivered pre-programmed. Plug into a wall outlet and step back.',
+        p1_price: '$3,499',
+        p1_desc: 'Built without a seat or handlebars to prevent rider interference. A 4.2 kW crank motor pedals uphill stages all afternoon while an optical camera watches scenic mountain rides on an inward-facing screen.',
+        p1_spec1_label: 'Cadence',
+        p1_spec1_val: '140 RPM continuous',
+        p1_spec2_label: 'Saddle',
+        p1_spec2_val: 'Omitted',
+        p2_price: '$899',
+        p2_desc: 'Segmented carbon-fiber floor mat with 18 internal hydraulic hinges. Folds and extends itself through strict pushups, sit-ups, and planks on your living room rug. Gently bucks off anyone who tries to stretch on it.',
+        p2_spec1_label: 'Output',
+        p2_spec1_val: '64 pushups / min',
+        p2_spec2_label: 'Actuators',
+        p2_spec2_val: '18 hinge servos',
+        p3_price: '$6,200',
+        p3_desc: 'Twin linear pistons rep 320 kg of calibrated steel day and night. Floor sensors pause the bar immediately if a human walks over and asks how many sets it has left.',
+        p3_spec1_label: 'Working load',
+        p3_spec1_val: '320 kg',
+        p3_spec2_label: 'Bench mount',
+        p3_spec2_val: 'Incompatible',
+        lab_kicker: 'R&D Lab',
+        lab_heading: 'Automate any gym item',
+        lab_desc: 'Type in a regular piece of fitness gear (or household object). Our lab will redesign it to work out entirely on its own, photograph the prototype, and add it to the shared archive below.',
+        lab_input_label: 'Equipment or object',
+        lab_input_placeholder: 'Jump rope, foam roller, dumbbell...',
+        lab_submit: 'Generate Prototype',
+        lab_wait: 'Wait {s}s',
+        lab_step_design: 'Designing mechanism...',
+        lab_step_photo: 'Photographing prototype...',
+        local_title: 'Local File Connection',
+        local_reset: 'Reset',
+        local_desc: 'Opened directly from your computer. Paste your deployed Vercel URL (to sync with the online archive) or a Gemini API key (saved only in this browser, never in GitHub).',
+        local_placeholder: 'https://your-site.vercel.app  or  AIza...',
+        local_save: 'Save to Browser',
+        local_missing_err: 'Paste your deployed Vercel URL or a Gemini API key in the Local File Connection box above first.',
+        spec_fail_err: 'Could not generate prototype specs. Check your API key or Vercel URL.',
+        generic_err: 'Could not generate prototype. Try again.',
+        datasheet_empty: 'Your generated prototype will appear here.',
+        datasheet_based_on: 'Based on',
+        datasheet_routine: 'Autonomous Routine',
+        datasheet_specs: 'Specifications',
+        datasheet_note: 'Note:',
+        datasheet_render_pending: 'Studio render pending',
+        archive_heading: 'Prototype Archive',
+        archive_sub: 'Machines commissioned by visitors.',
+        archive_refresh: 'Refresh',
+        archive_empty: 'No prototypes in the archive yet. Create the first one above.',
+        footer_brand: 'AutoRep — Autonomous Fitness Hardware',
+        footer_safety: 'Please keep hands and feet clear of active equipment.',
+        footer_local: 'Local Settings',
+        modal_close: 'Close'
+      }
+    };
+
+    const isLocalFile = window.location.protocol === 'file:';
+    let memoryFallbackStore = {};
+    let archiveItems = [];
+    let currentFeatured = null;
+    let currentModalProto = null;
+    let isServerConnected = false;
+    let cooldownRemaining = 0;
+    let cooldownTimer = null;
+
+    function storageGet(key) {
+      try {
+        return window.localStorage.getItem(key) || '';
+      } catch (_) {
+        return memoryFallbackStore[key] || '';
+      }
+    }
+
+    function storageSet(key, val) {
+      try {
+        if (val) window.localStorage.setItem(key, val);
+        else window.localStorage.removeItem(key);
+      } catch (_) {
+        memoryFallbackStore[key] = val;
+      }
+    }
+
+    let currentLang = storageGet('autorep_lang') === 'en' ? 'en' : 'de';
+
+    function t(key) {
+      return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS.de[key] || key;
+    }
+
+    function getApiEndpoint() {
+      const configuredUrl = (DEPLOYED_VERCEL_URL || storageGet('autorep_vercel_url')).trim().replace(/\/+$/, '');
+      if (configuredUrl) {
+        return configuredUrl.endsWith('/api/invent') ? configuredUrl : `${configuredUrl}/api/invent`;
+      }
+      if (!isLocalFile) {
+        return '/api/invent';
+      }
+      return null;
+    }
+
+    const langDeBtn = document.getElementById('langDeBtn');
+    const langEnBtn = document.getElementById('langEnBtn');
+    const datasheetOutput = document.getElementById('datasheetOutput');
+    const archiveGrid = document.getElementById('archiveGrid');
+    const archiveEmptyState = document.getElementById('archiveEmptyState');
+    const synthesizerForm = document.getElementById('synthesizerForm');
+    const itemInput = document.getElementById('itemInput');
+    const synthesizeBtn = document.getElementById('synthesizeBtn');
+    const synthLoadingOverlay = document.getElementById('synthLoadingOverlay');
+    const synthStepTitle = document.getElementById('synthStepTitle');
+    const synthErrorBox = document.getElementById('synthErrorBox');
+    const synthErrorText = document.getElementById('synthErrorText');
+    const refreshArchiveBtn = document.getElementById('refreshArchiveBtn');
+    const inspectModal = document.getElementById('inspectModal');
+    const modalHeaderCode = document.getElementById('modalHeaderCode');
+    const modalBodyContent = document.getElementById('modalBodyContent');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    const localSetupBox = document.getElementById('localSetupBox');
+    const localConfigInput = document.getElementById('localConfigInput');
+    const saveLocalConfigBtn = document.getElementById('saveLocalConfigBtn');
+    const clearLocalConfigBtn = document.getElementById('clearLocalConfigBtn');
+    const footerLocalSettingsBtn = document.getElementById('footerLocalSettingsBtn');
+
+    function setLanguage(lang) {
+      currentLang = lang === 'en' ? 'en' : 'de';
+      storageSet('autorep_lang', currentLang);
+      document.documentElement.lang = currentLang;
+      document.title = t('page_title');
+
+      if (currentLang === 'de') {
+        langDeBtn.className = 'px-2.5 py-1.5 transition-colors bg-ink text-surface font-medium';
+        langEnBtn.className = 'px-2.5 py-1.5 transition-colors text-muted hover:text-ink';
+      } else {
+        langEnBtn.className = 'px-2.5 py-1.5 transition-colors bg-ink text-surface font-medium';
+        langDeBtn.className = 'px-2.5 py-1.5 transition-colors text-muted hover:text-ink';
+      }
+
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+      });
+
+      itemInput.placeholder = t('lab_input_placeholder');
+      localConfigInput.placeholder = t('local_placeholder');
+
+      if (cooldownRemaining > 0) {
+        synthesizeBtn.textContent = t('lab_wait').replace('{s}', cooldownRemaining);
+      } else {
+        synthesizeBtn.textContent = t('lab_submit');
+      }
+
+      renderFeaturedDatasheet(currentFeatured);
+      if (currentModalProto && !inspectModal.classList.contains('hidden')) {
+        modalBodyContent.innerHTML = buildProductDetailMarkup(currentModalProto, true);
+      }
+    }
+
+    langDeBtn.addEventListener('click', () => setLanguage('de'));
+    langEnBtn.addEventListener('click', () => setLanguage('en'));
+
+    function updateLocalSetupVisibility(forceShow = false) {
+      if (!isLocalFile) return;
+
+      footerLocalSettingsBtn.classList.remove('hidden');
+      const hasSavedUrl = Boolean(DEPLOYED_VERCEL_URL || storageGet('autorep_vercel_url'));
+      const hasSavedKey = Boolean(storageGet('autorep_local_gemini_key'));
+
+      if (hasSavedUrl || hasSavedKey) {
+        clearLocalConfigBtn.classList.remove('hidden');
+      } else {
+        clearLocalConfigBtn.classList.add('hidden');
+      }
+
+      if (forceShow || (!hasSavedUrl && !hasSavedKey)) {
+        localSetupBox.classList.remove('hidden');
+      } else {
+        localSetupBox.classList.add('hidden');
+      }
+    }
+
+    saveLocalConfigBtn.addEventListener('click', () => {
+      const raw = localConfigInput.value.trim();
+      if (!raw) return;
+
+      if (raw.startsWith('http://') || raw.startsWith('https://')) {
+        storageSet('autorep_vercel_url', raw.replace(/\/+$/, ''));
+        storageSet('autorep_local_gemini_key', '');
+      } else {
+        storageSet('autorep_local_gemini_key', raw);
+        storageSet('autorep_vercel_url', '');
+      }
+
+      localConfigInput.value = '';
+      synthErrorBox.classList.add('hidden');
+      updateLocalSetupVisibility(false);
+      loadSharedArchive();
+    });
+
+    clearLocalConfigBtn.addEventListener('click', () => {
+      storageSet('autorep_vercel_url', '');
+      storageSet('autorep_local_gemini_key', '');
+      localConfigInput.value = '';
+      updateLocalSetupVisibility(true);
+    });
+
+    footerLocalSettingsBtn.addEventListener('click', () => {
+      localSetupBox.classList.toggle('hidden');
+      if (!localSetupBox.classList.contains('hidden')) {
+        localSetupBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    async function fetchWithBackoff(url, options, maxRetries = 2) {
+      let delay = 1000;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          const response = await fetch(url, options);
+          if (response.status === 429 || response.status >= 500) {
+            if (attempt === maxRetries) return response;
+            await new Promise(r => setTimeout(r, delay));
+            delay *= 2;
+            continue;
+          }
+          return response;
+        } catch (err) {
+          if (attempt === maxRetries) throw err;
+          await new Promise(r => setTimeout(r, delay));
+          delay *= 2;
+        }
+      }
+    }
+
+    function renderEmptyDatasheet() {
+      datasheetOutput.innerHTML = `
+        <div class="border border-line bg-surface">
+          <div class="aspect-[4/3] bg-studio flex items-center justify-center px-6 text-center">
+            <span class="text-sm text-muted">${escapeHtml(t('datasheet_empty'))}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function buildProductDetailMarkup(proto, inModal = false) {
+      const specsList = Array.isArray(proto.specs) ? proto.specs : [];
+      const mediaHtml = proto.image_url
+        ? `<img src="${escapeHtml(proto.image_url)}" alt="${escapeHtml(proto.product_name)}" class="w-full h-full object-cover" />`
+        : `<div class="w-full h-full flex items-center justify-center font-mono text-xs text-muted px-6 text-center">${escapeHtml(proto.model_code)} — ${escapeHtml(t('datasheet_render_pending'))}</div>`;
+
+      return `
+        <div class="${inModal ? '' : 'border border-line'} bg-surface">
+          <div class="aspect-[4/3] bg-studio overflow-hidden">
+            ${mediaHtml}
+          </div>
+
+          <div class="p-6 sm:p-8">
+            <div class="flex items-baseline justify-between gap-4">
+              <div>
+                <span class="font-mono text-xs text-muted">${escapeHtml(proto.model_code)} · ${escapeHtml(t('datasheet_based_on'))} ${escapeHtml(proto.base_item)}</span>
+                <h3 class="text-2xl font-medium tracking-tight mt-1">${escapeHtml(proto.product_name)}</h3>
+              </div>
+              <span class="font-mono text-base">${escapeHtml(proto.msrp)}</span>
+            </div>
+
+            <p class="mt-4 text-sm text-muted leading-relaxed">${escapeHtml(proto.tagline)}</p>
+
+            <div class="mt-6 pt-5 border-t border-line grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
+              <div>
+                <h4 class="font-mono uppercase text-muted mb-2">${escapeHtml(t('datasheet_routine'))}</h4>
+                <p class="leading-relaxed text-ink">${escapeHtml(proto.autonomous_routine)}</p>
+              </div>
+              <div>
+                <h4 class="font-mono uppercase text-muted mb-2">${escapeHtml(t('datasheet_specs'))}</h4>
+                <ul class="space-y-1.5 text-ink">
+                  ${specsList.map(s => `<li>— ${escapeHtml(s)}</li>`).join('')}
+                </ul>
+              </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-line font-mono text-xs text-muted">
+              ${escapeHtml(t('datasheet_note'))} ${escapeHtml(proto.osha_warning)}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFeaturedDatasheet(proto) {
+      if (!proto) {
+        renderEmptyDatasheet();
+        return;
+      }
+      currentFeatured = proto;
+      datasheetOutput.innerHTML = buildProductDetailMarkup(proto, false);
+    }
+
+    function renderArchiveGrid() {
+      if (!archiveItems.length) {
+        archiveEmptyState.classList.remove('hidden');
+        archiveGrid.classList.add('hidden');
+        archiveGrid.classList.remove('grid');
+        archiveGrid.innerHTML = '';
+        return;
+      }
+
+      archiveEmptyState.classList.add('hidden');
+      archiveGrid.classList.remove('hidden');
+      archiveGrid.classList.add('grid');
+
+      archiveGrid.innerHTML = archiveItems.map((item) => {
+        const thumb = item.image_url
+          ? `<img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.product_name)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300" />`
+          : `<div class="w-full h-full flex items-center justify-center font-mono text-xs text-muted">${escapeHtml(item.model_code)}</div>`;
+
+        return `
+          <article
+            data-archive-id="${escapeHtml(item.id)}"
+            class="archive-card cursor-pointer group flex flex-col"
+          >
+            <div class="aspect-[4/3] bg-studio mb-4 overflow-hidden">
+              ${thumb}
+            </div>
+            <div class="flex items-baseline justify-between gap-2">
+              <h3 class="text-base font-medium group-hover:text-accent transition-colors">${escapeHtml(item.product_name)}</h3>
+              <span class="font-mono text-xs text-muted">${escapeHtml(item.msrp)}</span>
+            </div>
+            <p class="mt-1 text-xs text-muted line-clamp-2 leading-relaxed">${escapeHtml(item.tagline)}</p>
+          </article>
+        `;
+      }).join('');
+
+      archiveGrid.querySelectorAll('.archive-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          const id = card.getAttribute('data-archive-id');
+          const found = archiveItems.find(p => String(p.id) === String(id));
+          if (found) openInspectModal(found);
+        });
+      });
+    }
+
+    function openInspectModal(proto) {
+      currentModalProto = proto;
+      modalHeaderCode.textContent = `${proto.model_code} — ${proto.product_name}`;
+      modalBodyContent.innerHTML = buildProductDetailMarkup(proto, true);
+      inspectModal.classList.remove('hidden');
+      inspectModal.classList.add('flex');
+    }
+
+    function closeInspectModal() {
+      currentModalProto = null;
+      inspectModal.classList.add('hidden');
+      inspectModal.classList.remove('flex');
+    }
+
+    closeModalBtn.addEventListener('click', closeInspectModal);
+    inspectModal.addEventListener('click', (e) => {
+      if (e.target === inspectModal) closeInspectModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeInspectModal();
+    });
+
+    async function loadSharedArchive() {
+      const endpoint = getApiEndpoint();
+      if (!endpoint) return;
+
+      try {
+        const res = await fetch(endpoint, { method: 'GET' });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.prototypes)) {
+            isServerConnected = true;
+            archiveItems = data.prototypes;
+            renderArchiveGrid();
+          }
+        }
+      } catch (_) {
+        isServerConnected = false;
+      }
+    }
+
+    refreshArchiveBtn.addEventListener('click', loadSharedArchive);
+
+    setInterval(() => {
+      if (!document.hidden && isServerConnected) {
+        loadSharedArchive();
+      }
+    }, 15000);
+
+    async function synthesizeDirect(baseItem) {
+      const apiKey = storageGet('autorep_local_gemini_key') || '';
+      if (isLocalFile && !apiKey) {
+        updateLocalSetupVisibility(true);
+        throw new Error(t('local_missing_err'));
+      }
+
+      const isGerman = currentLang === 'de';
+      const languageDirective = isGerman
+        ? 'Write tagline, autonomous_routine, specs, and osha_warning in crisp, dry, idiomatic GERMAN (Braun industrial catalog tone). Format msrp in Euros like "1.850 €". IMPORTANT: Keep image_prompt strictly in ENGLISH.'
+        : 'Write tagline, autonomous_routine, specs, and osha_warning in crisp, dry ENGLISH (Braun industrial catalog tone). Format msrp in USD like "$1,850". Keep image_prompt in ENGLISH.';
+
+      const textModels = ['gemini-4-hydrogen', 'gemini-3.8-flash', 'gemini-2.5-flash'];
+      const systemPrompt = `You are an industrial hardware designer at AutoRep, a deadpan minimalist brand (like Braun and Teenage Engineering) making gym equipment that exercises BY ITSELF with zero humans involved.
+Redesign the user's item into an autonomous self-exercising machine.
+Rules:
+- ${languageDirective}
+- Keep all output strictly school-safe and appropriate for teenagers. If input is inappropriate, redesign a harmless "Yoga Block" instead.
+- No emojis, no sci-fi buzzwords, just dry, believable mechanical comedy.
+- Include an "image_prompt" in ENGLISH describing ONLY the physical machine exercising on its own (matte silver aluminum, matte black carbon, small safety-orange #FF4F00 mechanical hinges/motors, no seats or grips for humans, zero people, no text).`;
+
+      let parsed = null;
+      for (const model of textModels) {
+        const textUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const specRes = await fetchWithBackoff(textUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ role: 'user', parts: [{ text: `Item: "${baseItem}"` }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            generationConfig: {
+              responseMimeType: 'application/json',
+              responseSchema: {
+                type: 'OBJECT',
+                properties: {
+                  model_code: { type: 'STRING' },
+                  product_name: { type: 'STRING' },
+                  msrp: { type: 'STRING' },
+                  tagline: { type: 'STRING' },
+                  autonomous_routine: { type: 'STRING' },
+                  specs: { type: 'ARRAY', items: { type: 'STRING' } },
+                  osha_warning: { type: 'STRING' },
+                  image_prompt: { type: 'STRING' }
+                },
+                required: [
+                  'model_code', 'product_name', 'msrp', 'tagline',
+                  'autonomous_routine', 'specs', 'osha_warning', 'image_prompt'
+                ]
+              }
+            }
+          })
+        });
+
+        if (specRes.ok) {
+          const specResult = await specRes.json();
+          parsed = JSON.parse(specResult.candidates[0].content.parts[0].text);
+          break;
+        }
+      }
+
+      if (!parsed) {
+        throw new Error(t('spec_fail_err'));
+      }
+
+      synthStepTitle.textContent = t('lab_step_photo');
+
+      let generatedImageUrl = '';
+      const imageModels = ['gemini-nano-banana-2.1', 'gemini-3.1-flash-image', 'gemini-3.1-flash-lite-image'];
+      const studioPrompt = `Commercial industrial design studio photograph of ${parsed.image_prompt}. Bead-blasted matte silver anodized aluminum, matte black carbon, subtle safety-orange (#FF4F00) motorized joints mid-workout, zero humans. Seamless warm light-stone grey studio backdrop (#EAE8E3), soft overhead studio lighting, crisp contact shadow, Hasselblad 85mm product photography, Braun and Teenage Engineering aesthetic, photorealistic, no text.`;
+
+      for (const imgModel of imageModels) {
+        try {
+          const imgRes = await fetchWithBackoff(
+            `https://generativelanguage.googleapis.com/v1beta/models/${imgModel}:generateContent?key=${encodeURIComponent(apiKey)}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: studioPrompt }] }],
+                generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+              })
+            },
+            1
+          );
+
+          if (imgRes.ok) {
+            const imgData = await imgRes.json();
+            const inlinePart = imgData?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+            if (inlinePart?.inlineData?.data) {
+              const mime = inlinePart.inlineData.mimeType || 'image/png';
+              generatedImageUrl = `data:${mime};base64,${inlinePart.inlineData.data}`;
+              break;
+            }
+          }
+        } catch (_) {}
+      }
+
+      return {
+        id: 'local-' + Date.now(),
+        model_code: parsed.model_code || 'ARP-04',
+        product_name: parsed.product_name || 'AutoUnit',
+        base_item: baseItem,
+        msrp: parsed.msrp || (isGerman ? '1.490 €' : '$1,490'),
+        tagline: parsed.tagline,
+        autonomous_routine: parsed.autonomous_routine,
+        specs: (parsed.specs || []).slice(0, 3),
+        osha_warning: parsed.osha_warning,
+        image_url: generatedImageUrl,
+        created_at: new Date().toISOString()
+      };
+    }
+
+    function startCooldown(seconds = 8) {
+      cooldownRemaining = seconds;
+      synthesizeBtn.disabled = true;
+      if (cooldownTimer) clearInterval(cooldownTimer);
+
+      const tick = () => {
+        if (cooldownRemaining <= 0) {
+          clearInterval(cooldownTimer);
+          synthesizeBtn.disabled = false;
+          synthesizeBtn.textContent = t('lab_submit');
+          return;
+        }
+        synthesizeBtn.textContent = t('lab_wait').replace('{s}', cooldownRemaining);
+        cooldownRemaining -= 1;
+      };
+      tick();
+      cooldownTimer = setInterval(tick, 1000);
+    }
+
+    synthesizerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (cooldownRemaining > 0) return;
+
+      const baseItem = itemInput.value.trim();
+      if (!baseItem) return;
+
+      synthErrorBox.classList.add('hidden');
+      synthesizeBtn.disabled = true;
+      synthStepTitle.textContent = t('lab_step_design');
+      synthLoadingOverlay.classList.remove('hidden');
+
+      try {
+        let createdPrototype = null;
+        const endpoint = getApiEndpoint();
+
+        if (endpoint) {
+          try {
+            const serverRes = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ item: baseItem, lang: currentLang })
+            });
+
+            if (serverRes.ok) {
+              const payload = await serverRes.json();
+              createdPrototype = payload.prototype;
+              isServerConnected = true;
+            } else if (serverRes.status !== 404 && serverRes.status !== 405) {
+              const errJson = await serverRes.json().catch(() => ({}));
+              throw new Error(errJson.error || `Request failed (${serverRes.status})`);
+            }
+          } catch (networkErr) {
+            if (isServerConnected && networkErr.message && !networkErr.message.includes('Failed to fetch')) {
+              throw networkErr;
+            }
+          }
+        }
+
+        if (!createdPrototype) {
+          createdPrototype = await synthesizeDirect(baseItem);
+        }
+
+        renderFeaturedDatasheet(createdPrototype);
+        archiveItems = [createdPrototype, ...archiveItems.filter(x => x.id !== createdPrototype.id)];
+        renderArchiveGrid();
+        itemInput.value = '';
+        startCooldown(8);
+      } catch (err) {
+        synthErrorText.textContent = err.message || t('generic_err');
+        synthErrorBox.classList.remove('hidden');
+        synthesizeBtn.disabled = false;
+      } finally {
+        synthLoadingOverlay.classList.add('hidden');
+      }
+    });
+
+    window.onload = function () {
+      updateLocalSetupVisibility(false);
+      setLanguage(currentLang);
+      renderArchiveGrid();
+      loadSharedArchive();
+    };
+  </script>
+</body>
+</html>

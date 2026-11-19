@@ -1,0 +1,15 @@
+Environment variables & secret keys (NEVER commit these)
+
+.env
+.env.*
+!.env.example
+
+Vercel local development folder
+
+.vercel
+
+Dependencies & OS files
+
+node_modules/
+.DS_Store
+Thumbs.db
