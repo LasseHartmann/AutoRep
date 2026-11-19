@@ -20,14 +20,23 @@ Damit statische Bilder und die Serverless-Route /api/invent auf Vercel sauber au
 
 autorep-autonomous-gym/
 ├── api/
-│   └── invent.js          # Serverless-Endpunkt (SSE-Streaming mit Gemini 3.5 Flash-Lite)
+
+│   └── invent.js  # Serverless-Endpunkt (SSE-Streaming mit Gemini 3.5 Flash-Lite)
+
 ├── images/
+
 │   ├── hero.jpg           # Hero-Bild der Trainingshalle (empfohlen: 2816x1536)
+
 │   ├── solocycle.jpg      # Produktbild ARP-01 SoloCycle Pro
+
 │   ├── flexmat.jpg        # Produktbild ARP-02 FlexMat Carbon
+
 │   └── ghostrack.jpg      # Produktbild ARP-03 GhostRack 5000
+
 ├── index.html             # Deutschsprachiges Frontend inkl. Stream-Reader & Archiv
+
 ├── package.json           # Node-ESM-Konfiguration & @google/genai SDK
+
 └── .env                   # Lokaler API-Key (nicht ins Git-Repository committen)
 
 
