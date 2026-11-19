@@ -7,7 +7,7 @@
   <link
     rel="icon"
     type="image/svg+xml"
-    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23161615'/%3E%3Crect x='7' y='7' width='18' height='18' fill='none' stroke='%23F5F4F0' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%23FF4F00'/%3E%3C/svg%3E"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23161615'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23FF4F00'/%3E%3C/svg%3E"
   />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -56,7 +56,6 @@
       display: none !important;
     }
 
-    /* Header */
     header {
       position: sticky;
       top: 0;
@@ -90,7 +89,6 @@
       height: 10px;
       border-radius: 50%;
       background: var(--accent);
-      display: inline-block;
     }
 
     .nav-right {
@@ -130,7 +128,6 @@
       font-size: 0.75rem;
       padding: 6px 10px;
       cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease;
     }
 
     .lang-btn.active {
@@ -138,7 +135,6 @@
       color: var(--bg);
     }
 
-    /* Sections */
     section {
       padding: 72px 0;
       border-bottom: 1px solid var(--border);
@@ -153,7 +149,6 @@
       margin-bottom: 14px;
     }
 
-    /* Hero */
     .hero-copy {
       max-width: 780px;
       margin-bottom: 40px;
@@ -184,7 +179,6 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
       padding: 13px 22px;
       font-family: var(--font-sans);
       font-size: 0.925rem;
@@ -192,7 +186,7 @@
       text-decoration: none;
       border: 1px solid var(--ink);
       cursor: pointer;
-      transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
 
     .btn-primary {
@@ -221,7 +215,6 @@
       cursor: not-allowed;
     }
 
-    /* Centered 2816x1536 Media Frames */
     .media-frame {
       position: relative;
       width: 100%;
@@ -256,21 +249,6 @@
       z-index: 1;
     }
 
-    .media-badge {
-      position: absolute;
-      left: 12px;
-      bottom: 12px;
-      z-index: 5;
-      background: rgba(22, 22, 21, 0.84);
-      color: #F5F4F0;
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      letter-spacing: 0.04em;
-      padding: 5px 10px;
-      pointer-events: none;
-    }
-
-    /* Section Headers */
     .section-head {
       display: flex;
       flex-wrap: wrap;
@@ -292,14 +270,15 @@
       font-size: 0.975rem;
     }
 
-    /* Product Grid */
-    .product-grid {
+    .product-grid,
+    .archive-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
     }
 
-    .product-card {
+    .product-card,
+    .archive-card {
       background: var(--card);
       border: 1px solid var(--border);
       display: flex;
@@ -348,12 +327,10 @@
       padding-top: 14px;
       font-family: var(--font-mono);
       font-size: 0.75rem;
-      color: var(--ink);
       display: grid;
       gap: 6px;
     }
 
-    /* R&D Synthesizer Lab */
     .lab-grid {
       display: grid;
       grid-template-columns: 5fr 7fr;
@@ -404,20 +381,19 @@
       padding: 12px 14px;
       border: 1px solid var(--accent);
       background: rgba(255, 79, 0, 0.06);
-      color: var(--ink);
       font-size: 0.85rem;
+      word-break: break-word;
     }
 
-    /* Featured Datasheet */
     .datasheet-shell {
       position: relative;
       background: var(--card);
       border: 1px solid var(--border);
-      min-height: 360px;
+      min-height: 310px;
     }
 
     .datasheet-empty {
-      min-height: 360px;
+      min-height: 310px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -432,7 +408,7 @@
       position: absolute;
       inset: 0;
       z-index: 10;
-      background: rgba(248, 247, 244, 0.92);
+      background: rgba(248, 247, 244, 0.94);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -452,63 +428,103 @@
     }
 
     @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+      to { transform: rotate(360deg); }
     }
 
     .loading-text {
       font-family: var(--font-mono);
       font-size: 0.78rem;
-      color: var(--ink);
     }
 
-    .detail-body {
-      padding: 24px;
-    }
-
-    .detail-header {
+    .spec-strip {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
-      gap: 16px;
-      margin-bottom: 6px;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 26px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+
+    .spec-strip-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .detail-code {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
       color: var(--accent);
+      font-weight: 500;
+    }
+
+    .detail-base {
+      color: var(--muted);
+      text-transform: uppercase;
     }
 
     .detail-price {
       font-family: var(--font-mono);
       font-size: 0.85rem;
-      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .detail-body {
+      padding: 26px;
     }
 
     .detail-title {
-      font-size: 1.5rem;
+      font-size: 1.65rem;
       font-weight: 600;
       letter-spacing: -0.02em;
-      margin-bottom: 6px;
+      line-height: 1.15;
+      margin-bottom: 8px;
     }
 
     .detail-tagline {
-      font-size: 0.975rem;
+      font-size: 1rem;
       color: var(--muted);
-      margin-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .detail-section-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
     }
 
     .detail-behavior {
-      font-size: 0.925rem;
-      margin-bottom: 18px;
-      padding-bottom: 18px;
+      font-size: 0.95rem;
+      margin-bottom: 22px;
+      padding-bottom: 20px;
       border-bottom: 1px solid var(--border);
     }
 
+    .numbered-specs {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    .numbered-specs li {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+    }
+
+    .spec-idx {
+      color: var(--muted);
+      min-width: 22px;
+    }
+
     .detail-safety {
-      margin-top: 16px;
+      margin-top: 20px;
       padding-top: 14px;
       border-top: 1px solid var(--border);
       font-family: var(--font-mono);
@@ -516,29 +532,49 @@
       color: var(--muted);
     }
 
-    /* Archive Grid */
-    .archive-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-    }
-
     .archive-card {
-      background: var(--card);
-      border: 1px solid var(--border);
       cursor: pointer;
       transition: border-color 0.15s ease;
-      display: flex;
-      flex-direction: column;
     }
 
     .archive-card:hover {
       border-color: var(--ink);
     }
 
-    .archive-card .media-frame {
-      border: none;
+    .archive-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+
+    .archive-card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .archive-card-base {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .archive-card-footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
     }
 
     .archive-empty {
@@ -550,7 +586,6 @@
       color: var(--muted);
     }
 
-    /* Modal */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -565,7 +600,7 @@
     .modal-card {
       background: var(--card);
       border: 1px solid var(--ink);
-      max-width: 720px;
+      max-width: 680px;
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
@@ -608,9 +643,7 @@
 
     @media (max-width: 920px) {
       .product-grid,
-      .archive-grid {
-        grid-template-columns: 1fr;
-      }
+      .archive-grid,
       .lab-grid {
         grid-template-columns: 1fr;
       }
@@ -643,7 +676,6 @@
   </header>
 
   <main>
-    <!-- Hero -->
     <section>
       <div class="container">
         <div class="hero-copy">
@@ -659,17 +691,12 @@
         </div>
 
         <div class="media-frame">
-          <img
-            src="images/hero.jpg"
-            alt="AutoRep Facility"
-            onerror="if(!this.dataset.triedJpeg){this.dataset.triedJpeg='1';this.src='images/hero.jpeg';}else{this.style.display='none';}"
-          />
+          <img src="images/hero.jpg" alt="AutoRep Facility" onerror="this.style.display='none';" />
           <div class="media-fallback">images/hero.jpg</div>
         </div>
       </div>
     </section>
 
-    <!-- Flagship Lineup -->
     <section id="lineup">
       <div class="container">
         <div class="section-head">
@@ -686,7 +713,6 @@
       </div>
     </section>
 
-    <!-- AI R&D Lab -->
     <section id="lab">
       <div class="container">
         <div class="section-head">
@@ -695,7 +721,7 @@
             <h2 class="section-title" data-i18n="lab_title">AutoRep F&amp;E-Synthesizer</h2>
           </div>
           <p class="section-desc" data-i18n="lab_desc">
-            Geben Sie ein beliebiges Trainingsgerät ein. Unser System konstruiert daraus eine selbsttrainierende Maschine für das gemeinsame Archiv.
+            Geben Sie ein beliebiges Trainingsgerät ein. Unser System konstruiert daraus ein technisches Datenblatt für das gemeinsame Archiv.
           </p>
         </div>
 
@@ -712,34 +738,27 @@
                 placeholder="z. B. Kettlebell, Rudergerät, Springseil ..."
                 data-i18n-placeholder="lab_placeholder"
               />
-              <button type="submit" id="synthesizeBtn" class="btn btn-primary" style="width: 100%;" data-i18n="lab_submit">
+              <button type="submit" id="synthesizeBtn" class="btn btn-primary" style="width: 100%;">
                 Prototyp generieren
               </button>
             </form>
             <p class="lab-hint" data-i18n="lab_hint">
-              Jeder generierte Entwurf wird live gespeichert und ist für den gesamten Kurs sichtbar.
+              Jedes generierte Datenblatt wird live gespeichert und ist für den gesamten Kurs sichtbar.
             </p>
-            <div id="synthErrorBox" class="error-box hidden">
-              <span id="synthErrorText"></span>
-            </div>
+            <div id="synthErrorBox" class="error-box hidden"></div>
           </div>
 
           <div class="datasheet-shell">
             <div id="synthLoadingOverlay" class="loading-overlay hidden">
               <div class="spinner"></div>
-              <p id="synthStepTitle" class="loading-text">CAD-Entwurf &amp; Datenblatt werden berechnet ...</p>
+              <p class="loading-text" data-i18n="lab_step_design">Technisches Datenblatt wird berechnet ...</p>
             </div>
-            <div id="featuredDatasheet">
-              <div class="datasheet-empty" data-i18n="datasheet_empty">
-                Ihr generierter Prototyp erscheint hier.
-              </div>
-            </div>
+            <div id="featuredDatasheet"></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Live Class Archive -->
     <section id="archive">
       <div class="container">
         <div class="section-head">
@@ -757,7 +776,6 @@
     </section>
   </main>
 
-  <!-- Inspection Modal -->
   <div id="inspectModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-top">
@@ -791,18 +809,19 @@
         lineup_desc: 'Gefertigt aus eloxiertem Aluminium und Sichtcarbon für den unbeaufsichtigten 24-Stunden-Dauerbetrieb.',
         lab_eyebrow: 'Abteilung Produktentwicklung',
         lab_title: 'AutoRep F&E-Synthesizer',
-        lab_desc: 'Geben Sie ein beliebiges Trainingsgerät ein. Unser System konstruiert daraus eine selbsttrainierende Maschine für das gemeinsame Archiv.',
+        lab_desc: 'Geben Sie ein beliebiges Trainingsgerät ein. Unser System konstruiert daraus ein technisches Datenblatt für das gemeinsame Archiv.',
         lab_label: 'Basis-Gegenstand',
         lab_placeholder: 'z. B. Kettlebell, Rudergerät, Springseil ...',
         lab_submit: 'Prototyp generieren',
         lab_wait: 'Bitte {s}s warten',
-        lab_hint: 'Jeder generierte Entwurf wird live gespeichert und ist für den gesamten Kurs sichtbar.',
-        lab_step_design: 'CAD-Entwurf & Datenblatt werden berechnet ...',
-        photo_upgrading: 'Studiofoto wird im Hintergrund entwickelt ...',
-        generic_err: 'Prototyp konnte nicht generiert werden. Bitte prüfen Sie Terminal / API-Keys.',
-        datasheet_empty: 'Ihr generierter Prototyp erscheint hier.',
-        datasheet_render_pending: 'CAD-Ansicht wird geladen',
+        lab_hint: 'Jedes generierte Datenblatt wird live gespeichert und ist für den gesamten Kurs sichtbar.',
+        lab_step_design: 'Technisches Datenblatt wird berechnet ...',
+        generic_err: 'Prototyp konnte nicht generiert werden. Bitte prüfen Sie Terminal & API-Keys.',
+        datasheet_empty: 'Ihr generiertes Datenblatt erscheint hier.',
+        protocol_heading: 'Autonomes Trainingsprotokoll',
+        specs_heading: 'Spezifikationen',
         safety_prefix: 'Sicherheitshinweis: ',
+        inspect_cta: 'Datenblatt öffnen →',
         archive_eyebrow: 'Gemeinsames Verzeichnis',
         archive_title: 'Entwicklungs-Archiv',
         archive_refresh: 'Aktualisieren',
@@ -825,18 +844,19 @@
         lineup_desc: 'Machined from anodized aluminum and matte carbon fiber for unattended 24-hour operation.',
         lab_eyebrow: 'Product Engineering Division',
         lab_title: 'AutoRep R&D Synthesizer',
-        lab_desc: 'Enter any piece of gym gear. Our system engineers a self-exercising machine and publishes it to the shared archive.',
+        lab_desc: 'Enter any piece of gym gear. Our system engineers a technical datasheet and publishes it to the shared archive.',
         lab_label: 'Base Equipment',
         lab_placeholder: 'e.g. Kettlebell, Rowing Machine, Jump Rope...',
         lab_submit: 'Generate Prototype',
         lab_wait: 'Wait {s}s',
-        lab_hint: 'Every generated machine is saved live and visible to everyone in the class.',
-        lab_step_design: 'Generating CAD blueprint & datasheet...',
-        photo_upgrading: 'Developing studio photo in background...',
-        generic_err: 'Could not generate prototype. Please check your server logs or API keys.',
-        datasheet_empty: 'Your generated prototype will appear here.',
-        datasheet_render_pending: 'Loading CAD schematic',
+        lab_hint: 'Every generated datasheet is saved live and visible to everyone in the class.',
+        lab_step_design: 'Generating technical datasheet...',
+        generic_err: 'Could not generate prototype. Please check your terminal & API keys.',
+        datasheet_empty: 'Your generated datasheet will appear here.',
+        protocol_heading: 'Autonomous Workout Protocol',
+        specs_heading: 'Specifications',
         safety_prefix: 'Safety notice: ',
+        inspect_cta: 'Open datasheet →',
         archive_eyebrow: 'Shared Registry',
         archive_title: 'R&D Archive',
         archive_refresh: 'Refresh',
@@ -851,7 +871,6 @@
       {
         code: 'ARP-01',
         image: 'images/solocycle.jpg',
-        fallbackImage: 'images/solocycle.jpeg',
         de: {
           name: 'SoloCycle Pro',
           price: '4.800 €',
@@ -868,7 +887,6 @@
       {
         code: 'ARP-02',
         image: 'images/flexmat.jpg',
-        fallbackImage: 'images/flexmat.jpeg',
         de: {
           name: 'FlexMat Carbon',
           price: '2.290 €',
@@ -885,7 +903,6 @@
       {
         code: 'ARP-03',
         image: 'images/ghostrack.jpg',
-        fallbackImage: 'images/ghostrack.jpeg',
         de: {
           name: 'GhostRack 5000',
           price: '8.900 €',
@@ -912,22 +929,16 @@
     const itemInput = document.getElementById('itemInput');
     const synthesizeBtn = document.getElementById('synthesizeBtn');
     const synthErrorBox = document.getElementById('synthErrorBox');
-    const synthErrorText = document.getElementById('synthErrorText');
     const synthLoadingOverlay = document.getElementById('synthLoadingOverlay');
-    const synthStepTitle = document.getElementById('synthStepTitle');
     const featuredDatasheet = document.getElementById('featuredDatasheet');
     const archiveContainer = document.getElementById('archiveContainer');
-    const refreshArchiveBtn = document.getElementById('refreshArchiveBtn');
     const inspectModal = document.getElementById('inspectModal');
     const modalBodyContent = document.getElementById('modalBodyContent');
-    const closeModalBtn = document.getElementById('closeModalBtn');
 
-    function t(key) {
-      return (I18N[currentLang] && I18N[currentLang][key]) || key;
-    }
+    const t = (key) => I18N[currentLang]?.[key] || key;
 
     function escapeHtml(value) {
-      return String(value == null ? '' : value)
+      return String(value ?? '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -935,143 +946,31 @@
         .replace(/'/g, '&#39;');
     }
 
-    function buildClientCadSvgUrl(modelCode, title, motionType = 'piston') {
-      const code = String(modelCode || 'ARP-04').replace(/[<>&"']/g, '');
-      const label = String(title || 'AUTOREP').slice(0, 28).replace(/[<>&"']/g, '');
-      let mechanism = '';
-
-      if (motionType === 'spin' || motionType === 'rotary') {
-        mechanism = `
-          <circle cx="400" cy="218" r="92" fill="none" stroke="#161615" stroke-width="2"/>
-          <circle cx="400" cy="218" r="14" fill="#FF4F00"/>
-          <g>
-            <line x1="400" y1="126" x2="400" y2="310" stroke="#161615" stroke-width="2"/>
-            <line x1="308" y1="218" x2="492" y2="218" stroke="#161615" stroke-width="2"/>
-            <circle cx="492" cy="218" r="7" fill="#FF4F00"/>
-            <animateTransform attributeName="transform" type="rotate" from="0 400 218" to="360 400 218" dur="3s" repeatCount="indefinite"/>
-          </g>`;
-      } else if (motionType === 'hinge' || motionType === 'hinged') {
-        mechanism = `
-          <line x1="250" y1="290" x2="550" y2="290" stroke="#161615" stroke-width="3"/>
-          <circle cx="330" cy="290" r="8" fill="#FF4F00"/>
-          <line x1="330" y1="290" x2="490" y2="220" stroke="#161615" stroke-width="5">
-            <animate attributeName="y2" values="284;195;284" dur="2.2s" repeatCount="indefinite"/>
-          </line>`;
-      } else if (motionType === 'roll' || motionType === 'roller') {
-        mechanism = `
-          <line x1="220" y1="286" x2="580" y2="286" stroke="#161615" stroke-width="2"/>
-          <g>
-            <circle cx="340" cy="246" r="40" fill="none" stroke="#161615" stroke-width="3"/>
-            <circle cx="340" cy="246" r="9" fill="#FF4F00"/>
-            <animateTransform attributeName="transform" type="translate" values="0 0;120 0;0 0" dur="3.2s" repeatCount="indefinite"/>
-          </g>`;
-      } else {
-        mechanism = `
-          <rect x="332" y="110" width="14" height="216" fill="none" stroke="#161615" stroke-width="2"/>
-          <rect x="454" y="110" width="14" height="216" fill="none" stroke="#161615" stroke-width="2"/>
-          <g>
-            <line x1="280" y1="180" x2="520" y2="180" stroke="#161615" stroke-width="4"/>
-            <rect x="292" y="156" width="18" height="48" fill="#FF4F00"/>
-            <rect x="490" y="156" width="18" height="48" fill="#FF4F00"/>
-            <animateTransform attributeName="transform" type="translate" values="0 0;0 76;0 0" dur="2.4s" repeatCount="indefinite"/>
-          </g>`;
-      }
-
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 436">
-        <rect width="800" height="436" fill="#EAE8E3"/>
-        <rect x="28" y="28" width="744" height="380" fill="none" stroke="#CFCBC2" stroke-width="1"/>
-        <text x="48" y="58" font-family="IBM Plex Mono, monospace" font-size="13" fill="#6E6D68">CAD SCHEMATIC // ${code}</text>
-        <text x="48" y="388" font-family="Space Grotesk, sans-serif" font-size="15" font-weight="600" fill="#161615">${label}</text>
-        ${mechanism}
-      </svg>`;
-
-      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-    }
-
     function localizePrototype(rawProto) {
-      if (!rawProto) return null;
-      const rawSpecs = rawProto.specs;
-      let i18nBlock = null;
-      let fallbackList = [];
-      let motionType = 'piston';
-      let cadSvg = '';
-
-      if (Array.isArray(rawSpecs)) {
-        fallbackList = rawSpecs;
-      } else if (rawSpecs && typeof rawSpecs === 'object') {
-        if (Array.isArray(rawSpecs.list)) fallbackList = rawSpecs.list;
-        if (rawSpecs.motion_type) motionType = rawSpecs.motion_type;
-        if (rawSpecs.cad_archetype) motionType = rawSpecs.cad_archetype;
-        if (rawSpecs.cad_svg) cadSvg = rawSpecs.cad_svg;
-        if (rawSpecs.i18n && rawSpecs.i18n[currentLang]) {
-          i18nBlock = rawSpecs.i18n[currentLang];
-        } else if (rawSpecs.i18n && rawSpecs.i18n.de) {
-          i18nBlock = rawSpecs.i18n.de;
-        }
-      }
-
-      const productName =
-        (i18nBlock && i18nBlock.product_name) ||
-        rawProto.product_name ||
-        'AutoRep Unit';
-
-      const tagline =
-        (i18nBlock && i18nBlock.tagline) ||
-        rawProto.tagline ||
-        '';
-
-      const behavior =
-        (i18nBlock && (i18nBlock.autonomous_routine || i18nBlock.autonomous_behavior)) ||
-        rawProto.autonomous_routine ||
-        rawProto.autonomous_behavior ||
-        '';
-
-      const price =
-        (i18nBlock && (i18nBlock.msrp || i18nBlock.price)) ||
-        rawProto.msrp ||
-        rawProto.price ||
-        '3.490 €';
-
-      const safety =
-        (i18nBlock && (i18nBlock.osha_warning || i18nBlock.safety_notice)) ||
-        rawProto.osha_warning ||
-        rawProto.safety_notice ||
-        '';
-
-      const specsList =
-        i18nBlock && Array.isArray(i18nBlock.specs)
-          ? i18nBlock.specs
-          : fallbackList;
+      const i18nBlock = rawProto.specs?.i18n?.[currentLang] || rawProto.specs?.i18n?.de || {};
+      const fallbackSpecs = Array.isArray(rawProto.specs)
+        ? rawProto.specs
+        : (rawProto.specs?.list || []);
 
       return {
-        id: rawProto.id,
         model_code: rawProto.model_code || 'ARP-04',
-        product_name: productName,
-        tagline,
-        autonomous_behavior: behavior,
-        price,
-        specs: specsList,
-        safety_notice: safety,
-        image_url:
-          rawProto.image_url ||
-          cadSvg ||
-          buildClientCadSvgUrl(rawProto.model_code, productName, motionType)
+        product_name: i18nBlock.product_name || rawProto.product_name || 'AutoRep Unit',
+        base_item: i18nBlock.base_item || rawProto.base_item || '',
+        msrp: i18nBlock.msrp || rawProto.msrp || '3.490 €',
+        tagline: i18nBlock.tagline || rawProto.tagline || '',
+        autonomous_routine: i18nBlock.autonomous_routine || rawProto.autonomous_routine || '',
+        specs: Array.isArray(i18nBlock.specs) ? i18nBlock.specs : fallbackSpecs,
+        osha_warning: i18nBlock.osha_warning || rawProto.osha_warning || ''
       };
     }
 
     function renderFlagships() {
-      const grid = document.getElementById('flagshipGrid');
-      grid.innerHTML = FLAGSHIP_PRODUCTS.map((item) => {
+      document.getElementById('flagshipGrid').innerHTML = FLAGSHIP_PRODUCTS.map((item) => {
         const copy = item[currentLang];
-        const specsMarkup = copy.specs.map((s) => `<li>— ${escapeHtml(s)}</li>`).join('');
         return `
           <article class="product-card">
             <div class="media-frame">
-              <img
-                src="${escapeHtml(item.image)}"
-                alt="${escapeHtml(copy.name)}"
-                onerror="if(!this.dataset.triedJpeg){this.dataset.triedJpeg='1';this.src='${escapeHtml(item.fallbackImage)}';}else{this.style.display='none';}"
-              />
+              <img src="${escapeHtml(item.image)}" alt="${escapeHtml(copy.name)}" onerror="this.style.display='none';" />
               <div class="media-fallback">${escapeHtml(item.image)}</div>
             </div>
             <div class="product-body">
@@ -1081,7 +980,9 @@
               </div>
               <h3 class="product-name">${escapeHtml(copy.name)}</h3>
               <p class="product-desc">${escapeHtml(copy.desc)}</p>
-              <ul class="spec-list">${specsMarkup}</ul>
+              <ul class="spec-list">
+                ${copy.specs.map((s) => `<li>— ${escapeHtml(s)}</li>`).join('')}
+              </ul>
             </div>
           </article>
         `;
@@ -1089,45 +990,42 @@
     }
 
     function buildProductDetailMarkup(rawProto) {
-      const proto = localizePrototype(rawProto);
-      const specsList = Array.isArray(proto.specs) ? proto.specs : [];
-      const upgradingBadge = rawProto._upgradingPhoto
-        ? `<div class="media-badge">${escapeHtml(t('photo_upgrading'))}</div>`
-        : '';
-
+      const p = localizePrototype(rawProto);
       return `
-        <div class="media-frame" style="border: none; border-bottom: 1px solid var(--border);">
-          <img
-            src="${escapeHtml(proto.image_url)}"
-            alt="${escapeHtml(proto.product_name)}"
-            onerror="this.style.display='none';"
-          />
-          <div class="media-fallback">${escapeHtml(proto.model_code)} — ${escapeHtml(t('datasheet_render_pending'))}</div>
-          ${upgradingBadge}
+        <div class="spec-strip">
+          <div class="spec-strip-left">
+            <span class="detail-code">${escapeHtml(p.model_code)}</span>
+            ${p.base_item ? `<span class="detail-base">/ ${escapeHtml(p.base_item)}</span>` : ''}
+          </div>
+          <span class="detail-price">${escapeHtml(p.msrp)}</span>
         </div>
         <div class="detail-body">
-          <div class="detail-header">
-            <span class="detail-code">${escapeHtml(proto.model_code)}</span>
-            <span class="detail-price">${escapeHtml(proto.price)}</span>
-          </div>
-          <h3 class="detail-title">${escapeHtml(proto.product_name)}</h3>
-          <p class="detail-tagline">${escapeHtml(proto.tagline)}</p>
-          <p class="detail-behavior">${escapeHtml(proto.autonomous_behavior)}</p>
-          <ul class="spec-list">
-            ${specsList.map((s) => `<li>— ${escapeHtml(s)}</li>`).join('')}
+          <h3 class="detail-title">${escapeHtml(p.product_name)}</h3>
+          <p class="detail-tagline">${escapeHtml(p.tagline)}</p>
+
+          <p class="detail-section-label">${escapeHtml(t('protocol_heading'))}</p>
+          <p class="detail-behavior">${escapeHtml(p.autonomous_routine)}</p>
+
+          <p class="detail-section-label">${escapeHtml(t('specs_heading'))}</p>
+          <ul class="numbered-specs">
+            ${p.specs.map((s, idx) => `
+              <li>
+                <span class="spec-idx">0${idx + 1}</span>
+                <span>${escapeHtml(s)}</span>
+              </li>
+            `).join('')}
           </ul>
-          ${proto.safety_notice ? `<p class="detail-safety">${escapeHtml(t('safety_prefix'))}${escapeHtml(proto.safety_notice)}</p>` : ''}
+
+          ${p.osha_warning ? `<p class="detail-safety">${escapeHtml(t('safety_prefix'))}${escapeHtml(p.osha_warning)}</p>` : ''}
         </div>
       `;
     }
 
     function renderFeaturedDatasheet(rawProto) {
       currentFeatured = rawProto;
-      if (!rawProto) {
-        featuredDatasheet.innerHTML = `<div class="datasheet-empty">${escapeHtml(t('datasheet_empty'))}</div>`;
-        return;
-      }
-      featuredDatasheet.innerHTML = buildProductDetailMarkup(rawProto);
+      featuredDatasheet.innerHTML = rawProto
+        ? buildProductDetailMarkup(rawProto)
+        : `<div class="datasheet-empty">${escapeHtml(t('datasheet_empty'))}</div>`;
     }
 
     function renderArchiveGrid() {
@@ -1140,27 +1038,17 @@
         <div class="archive-grid">
           ${archiveItems.map((raw) => {
             const p = localizePrototype(raw);
-            const badge = raw._upgradingPhoto
-              ? `<div class="media-badge">${escapeHtml(t('photo_upgrading'))}</div>`
-              : '';
             return `
               <article class="archive-card" data-proto-id="${escapeHtml(raw.id)}">
-                <div class="media-frame">
-                  <img
-                    src="${escapeHtml(p.image_url)}"
-                    alt="${escapeHtml(p.product_name)}"
-                    onerror="this.style.display='none';"
-                  />
-                  <div class="media-fallback">${escapeHtml(p.model_code)}</div>
-                  ${badge}
+                <div class="archive-card-head">
+                  <span class="detail-code">${escapeHtml(p.model_code)}</span>
+                  <span>${escapeHtml(p.msrp)}</span>
                 </div>
-                <div class="product-body">
-                  <div class="product-meta">
-                    <span>${escapeHtml(p.model_code)}</span>
-                    <span>${escapeHtml(p.price)}</span>
-                  </div>
+                <div class="archive-card-body">
+                  ${p.base_item ? `<span class="archive-card-base">${escapeHtml(p.base_item)}</span>` : ''}
                   <h3 class="product-name">${escapeHtml(p.product_name)}</h3>
                   <p class="product-desc" style="margin-bottom: 0;">${escapeHtml(p.tagline)}</p>
+                  <div class="archive-card-footer">${escapeHtml(t('inspect_cta'))}</div>
                 </div>
               </article>
             `;
@@ -1171,15 +1059,13 @@
       archiveContainer.querySelectorAll('.archive-card').forEach((card) => {
         card.addEventListener('click', () => {
           const found = archiveItems.find((x) => String(x.id) === String(card.dataset.protoId));
-          if (found) openInspectModal(found);
+          if (found) {
+            currentModalProto = found;
+            modalBodyContent.innerHTML = buildProductDetailMarkup(found);
+            inspectModal.classList.remove('hidden');
+          }
         });
       });
-    }
-
-    function openInspectModal(rawProto) {
-      currentModalProto = rawProto;
-      modalBodyContent.innerHTML = buildProductDetailMarkup(rawProto);
-      inspectModal.classList.remove('hidden');
     }
 
     function closeInspectModal() {
@@ -1188,13 +1074,10 @@
     }
 
     function updateButtonLabel() {
-      if (cooldownRemaining > 0) {
-        synthesizeBtn.textContent = t('lab_wait').replace('{s}', cooldownRemaining);
-        synthesizeBtn.disabled = true;
-      } else {
-        synthesizeBtn.textContent = t('lab_submit');
-        synthesizeBtn.disabled = false;
-      }
+      synthesizeBtn.textContent = cooldownRemaining > 0
+        ? t('lab_wait').replace('{s}', cooldownRemaining)
+        : t('lab_submit');
+      synthesizeBtn.disabled = cooldownRemaining > 0;
     }
 
     function startCooldown(seconds) {
@@ -1202,11 +1085,8 @@
       updateButtonLabel();
       clearInterval(cooldownTimer);
       cooldownTimer = setInterval(() => {
-        cooldownRemaining -= 1;
-        if (cooldownRemaining <= 0) {
-          clearInterval(cooldownTimer);
-          cooldownRemaining = 0;
-        }
+        cooldownRemaining = Math.max(0, cooldownRemaining - 1);
+        if (cooldownRemaining === 0) clearInterval(cooldownTimer);
         updateButtonLabel();
       }, 1000);
     }
@@ -1219,15 +1099,11 @@
       document.querySelectorAll('.lang-btn').forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.lang === currentLang);
       });
-
       document.querySelectorAll('[data-i18n]').forEach((el) => {
-        const key = el.getAttribute('data-i18n');
-        el.textContent = t(key);
+        el.textContent = t(el.getAttribute('data-i18n'));
       });
-
       document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        el.placeholder = t(key);
+        el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
       });
 
       updateButtonLabel();
@@ -1235,7 +1111,7 @@
       renderFeaturedDatasheet(currentFeatured);
       renderArchiveGrid();
 
-      if (currentModalProto && !inspectModal.classList.contains('hidden')) {
+      if (currentModalProto) {
         modalBodyContent.innerHTML = buildProductDetailMarkup(currentModalProto);
       }
     }
@@ -1249,148 +1125,37 @@
           archiveItems = data.prototypes;
           renderArchiveGrid();
         }
-      } catch (_) {
-        // Silent in offline/preview environments
-      }
+      } catch (_) {}
     }
 
-    async function upgradePrototypeWithStudioPhoto(createdProto, imagePrompt) {
-      if (!createdProto || !imagePrompt) return;
-      createdProto._upgradingPhoto = true;
+    synthesizerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const baseItem = itemInput.value.trim();
+      if (!baseItem || cooldownRemaining > 0) return;
 
-      if (currentFeatured && String(currentFeatured.id) === String(createdProto.id)) {
-        renderFeaturedDatasheet(createdProto);
-      }
-      renderArchiveGrid();
+      synthErrorBox.classList.add('hidden');
+      synthesizeBtn.disabled = true;
+      synthLoadingOverlay.classList.remove('hidden');
 
       try {
         const res = await fetch('/api/invent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'render_photo',
-            id: createdProto.id,
-            model_code: createdProto.model_code,
-            image_prompt: imagePrompt,
-            lang: currentLang
-          })
+          body: JSON.stringify({ item: baseItem, lang: currentLang })
         });
-        const data = await res.json().catch(() => ({}));
-        if (res.ok && data.upgraded && data.image_url) {
-          createdProto.image_url = data.image_url;
-        }
-      } catch (_) {
-        // Retains animated CAD blueprint seamlessly on timeout
-      } finally {
-        createdProto._upgradingPhoto = false;
-        archiveItems = archiveItems.map((item) =>
-          String(item.id) === String(createdProto.id) ? createdProto : item
-        );
-        renderArchiveGrid();
-
-        if (currentFeatured && String(currentFeatured.id) === String(createdProto.id)) {
-          renderFeaturedDatasheet(createdProto);
-        }
-        if (
-          currentModalProto &&
-          String(currentModalProto.id) === String(createdProto.id) &&
-          !inspectModal.classList.contains('hidden')
-        ) {
-          modalBodyContent.innerHTML = buildProductDetailMarkup(createdProto);
-        }
-      }
-    }
-
-    function buildOfflinePreviewPrototype(baseItem) {
-      const code = 'ARP-' + Math.floor(10 + Math.random() * 89);
-      const clean = baseItem.trim();
-      const i18n = {
-        de: {
-          product_name: `AutoRep ${clean} Mk.I`,
-          base_item: clean,
-          msrp: '3.490 €',
-          tagline: `Vollmotorisiertes ${clean}-System für unbeaufsichtigte Wiederholungen.`,
-          autonomous_routine: `Aktiviert um Punkt 06:00 Uhr seinen internen Servoantrieb und absolviert eigenständig 4 Sätze à 15 Wiederholungen bei konstanter Geschwindigkeit.`,
-          specs: ['Bürstenloser 1,8-kW-Direktantrieb', 'Eloxiertes Aluminiumgehäuse', 'Automatische Satzpausen-Kalibrierung'],
-          osha_warning: 'Mindestens 1,5 m Sicherheitsabstand während aktiver Sätze einhalten.'
-        },
-        en: {
-          product_name: `AutoRep ${clean} Mk.I`,
-          base_item: clean,
-          msrp: '€3,490',
-          tagline: `Fully motorized ${clean} unit engineered for unattended repetitions.`,
-          autonomous_routine: `Engages its internal servo drive at 06:00 sharp and executes 4 sets of 15 repetitions at calibrated tempo in an empty studio.`,
-          specs: ['1.8 kW brushless direct drive', 'Anodized aluminum chassis', 'Automated rest-interval calibration'],
-          osha_warning: 'Maintain a 1.5 m clearance radius during active training sets.'
-        }
-      };
-      const chosen = i18n[currentLang];
-      const cadUrl = buildClientCadSvgUrl(code, chosen.product_name, 'piston');
-      return {
-        id: 'preview-' + Date.now(),
-        model_code: code,
-        product_name: chosen.product_name,
-        base_item: chosen.base_item,
-        msrp: chosen.msrp,
-        tagline: chosen.tagline,
-        autonomous_routine: chosen.autonomous_routine,
-        specs: { list: i18n.de.specs, motion_type: 'piston', cad_svg: cadUrl, i18n },
-        osha_warning: chosen.osha_warning,
-        image_url: cadUrl
-      };
-    }
-
-    synthesizerForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (cooldownRemaining > 0) return;
-
-      const baseItem = itemInput.value.trim();
-      if (!baseItem) return;
-
-      synthErrorBox.classList.add('hidden');
-      synthesizeBtn.disabled = true;
-      synthStepTitle.textContent = t('lab_step_design');
-      synthLoadingOverlay.classList.remove('hidden');
-
-      try {
-        const serverRes = await fetch('/api/invent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'create', item: baseItem, lang: currentLang })
-        });
-
-        // Offline / Canvas preview fallback if /api/invent is not running
-        if (serverRes.status === 404) {
-          const demoProto = buildOfflinePreviewPrototype(baseItem);
-          renderFeaturedDatasheet(demoProto);
-          archiveItems = [demoProto, ...archiveItems];
-          renderArchiveGrid();
-          itemInput.value = '';
-          startCooldown(4);
-          return;
+        const payload = await res.json().catch(() => ({}));
+        if (!res.ok || !payload.prototype) {
+          throw new Error(payload.error || `Server error (${res.status})`);
         }
 
-        const payload = await serverRes.json().catch(() => ({}));
-        if (!serverRes.ok || !payload.prototype) {
-          throw new Error(payload.error || `Server error (${serverRes.status})`);
-        }
-
-        const createdPrototype = payload.prototype;
-        const promptForPhoto =
-          payload.image_prompt ||
-          (createdPrototype.specs && createdPrototype.specs.image_prompt) ||
-          '';
-
-        renderFeaturedDatasheet(createdPrototype);
-        archiveItems = [createdPrototype, ...archiveItems.filter((x) => x.id !== createdPrototype.id)];
+        const created = payload.prototype;
+        renderFeaturedDatasheet(created);
+        archiveItems = [created, ...archiveItems.filter((x) => x.id !== created.id)];
         renderArchiveGrid();
         itemInput.value = '';
-        startCooldown(6);
-
-        // Non-blocking Step 2: upgrade CAD blueprint to FLUX.1-schnell studio photo in background
-        upgradePrototypeWithStudioPhoto(createdPrototype, promptForPhoto);
+        startCooldown(5);
       } catch (err) {
-        synthErrorText.textContent = err.message || t('generic_err');
+        synthErrorBox.textContent = err.message || t('generic_err');
         synthErrorBox.classList.remove('hidden');
         synthesizeBtn.disabled = false;
       } finally {
@@ -1401,23 +1166,18 @@
     document.querySelectorAll('.lang-btn').forEach((btn) => {
       btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
     });
-
-    refreshArchiveBtn.addEventListener('click', loadArchive);
-    closeModalBtn.addEventListener('click', closeInspectModal);
+    document.getElementById('refreshArchiveBtn').addEventListener('click', loadArchive);
+    document.getElementById('closeModalBtn').addEventListener('click', closeInspectModal);
     inspectModal.addEventListener('click', (e) => {
       if (e.target === inspectModal) closeInspectModal();
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !inspectModal.classList.contains('hidden')) {
-        closeInspectModal();
-      }
+      if (e.key === 'Escape') closeInspectModal();
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
-      setLanguage(currentLang);
-      loadArchive();
-      setInterval(loadArchive, 20000);
-    });
+    setLanguage(currentLang);
+    loadArchive();
+    setInterval(loadArchive, 15000);
   </script>
 </body>
 </html>
